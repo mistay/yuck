@@ -97,7 +97,7 @@ namespace yuck
             MatrixMessagesResult matrixMessagesResult = null;
 
             string uri = String.Format("https://{0}/_matrix/client/r0/rooms/{1}/messages?access_token={2}&from={3}&dir=f", Properties.Settings.Default.matrixserver_hostname, roomID, matrixResult.access_token, from);
-            Console.WriteLine("uri:" + uri);
+            //Console.WriteLine("uri:" + uri);
 
             client.BaseAddress = new Uri(uri);
             client.DefaultRequestHeaders
@@ -108,12 +108,12 @@ namespace yuck
             {
                 HttpResponseMessage response = await client.GetAsync(client.BaseAddress);
                 Task<string> sss = response.Content.ReadAsStringAsync();
-                Console.WriteLine("/messages response status code:" + response.StatusCode);
+                //Console.WriteLine("/messages response status code:" + response.StatusCode);
 
                 if (response.IsSuccessStatusCode)
                 {
                     string responseString = response.Content.ReadAsStringAsync().Result;
-                    Console.WriteLine("response from server:" + responseString);
+                    //Console.WriteLine("response from server:" + responseString);
 
                     matrixMessagesResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixMessagesResult>(responseString);
                     fireMessageCompletedEvent(matrixMessagesResult);
