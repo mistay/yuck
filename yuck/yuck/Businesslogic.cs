@@ -176,16 +176,16 @@ namespace yuck
         }
 
 
-        public async Task sendMessage(string message)
+        public async Task sendMessage(string roomID, string message)
         {
-            await sendMessageAwait(message);
+            await sendMessageAwait(roomID, message);
         }
 
-        internal async Task<MatrixLoginResult> sendMessageAwait(string message)
+        internal async Task<MatrixLoginResult> sendMessageAwait(string roomID, string message)
         {
             MatrixLoginResult matrixLoginResult = null;
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(String.Format("https://matrix.st0ne.net/_matrix/client/r0/rooms/!zFCMhWfhBeMNuqXfIR:st0ne.net/send/m.room.message?access_token={0}", matrixResult.access_token));
+            client.BaseAddress = new Uri(String.Format("https://matrix.st0ne.net/_matrix/client/r0/rooms/{0}/send/m.room.message?access_token={1}", roomID, matrixResult.access_token));
             client.DefaultRequestHeaders
                   .Accept
                   .Add(new MediaTypeWithQualityHeaderValue("application/json"));

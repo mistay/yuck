@@ -46,7 +46,7 @@ namespace yuck
             txtChatmessages.AppendText(newline + message);
             txtChatmessages.SelectionAlignment = HorizontalAlignment.Right;
 
-            Businesslogic.Instance.sendMessage(message);
+            Businesslogic.Instance.sendMessage(this.roomID, message);
 
         }
 
