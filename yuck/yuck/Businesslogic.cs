@@ -65,16 +65,113 @@ namespace yuck
         }
 
 
-        public void loadRooms()
+        public delegate void SyncCompleted(MatrixSyncResult matrixSyncResult);
+        public event SyncCompleted SyncCompletedEvent;
+        private void fireSyncCompletedEvent(MatrixSyncResult matrixSyncResult)
         {
+            if (SyncCompletedEvent != null)
+            {
+                SyncCompletedEvent(matrixSyncResult);
+            }
+        }
+
+
+        public delegate void MessageCompleted(MatrixMessagesResult matrixMessagesResult);
+        public event MessageCompleted MessageCompletedEvent;
+        private void fireMessageCompletedEvent(MatrixMessagesResult matrixMessagesResult)
+        {
+            if (MessageCompletedEvent != null)
+            {
+                MessageCompletedEvent(matrixMessagesResult);
+            }
+        }
+
+
+        public async Task messagesAsync(string roomID, string from)
+        {
+            await messagesAwait(roomID, from);
+        }
+        internal async Task<MatrixMessagesResult> messagesAwait(string roomID, string from)
+        {
+            HttpClient client = new HttpClient();
+            MatrixMessagesResult matrixMessagesResult = null;
+
+            string uri = String.Format("https://{0}/_matrix/client/r0/rooms/{1}/messages?access_token={2}&from={3}&dir=f", Properties.Settings.Default.matrixserver_hostname, roomID, matrixResult.access_token, from);
+            Console.WriteLine("uri:" + uri);
+
+            client.BaseAddress = new Uri(uri);
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
             try
             {
-                loadRoomsAsync();
-            } catch (Exception e)
-            {
-                Console.WriteLine("could not loadRooms: " + e.Message);
-                Console.WriteLine(e.StackTrace);
+                HttpResponseMessage response = await client.GetAsync(client.BaseAddress);
+                Task<string> sss = response.Content.ReadAsStringAsync();
+                Console.WriteLine("/messages response status code:" + response.StatusCode);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = response.Content.ReadAsStringAsync().Result;
+                    Console.WriteLine("response from server:" + responseString);
+
+                    matrixMessagesResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixMessagesResult>(responseString);
+                    fireMessageCompletedEvent(matrixMessagesResult);
+                }
+
             }
+            catch (Exception e)
+            {
+                Console.WriteLine("could not syncAwait(): " + e.Message);
+            }
+
+            return null;
+        }
+
+        public async Task syncAsync(string next_batch)
+        {
+            await syncAwait(next_batch);
+        }
+        internal async Task<MatrixSyncResult> syncAwait(string next_batch)
+        {
+            HttpClient client = new HttpClient();
+            MatrixSyncResult matrixSyncResult = null;
+
+            string uri = String.Format("https://{0}/_matrix/client/r0/sync?access_token={1}{2}", Properties.Settings.Default.matrixserver_hostname, matrixResult.access_token, next_batch == null ? "" : "&since=" + next_batch);
+            Console.WriteLine("uri:" + uri);
+
+            client.BaseAddress = new Uri(uri);
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync(client.BaseAddress);
+                Task<string> sss = response.Content.ReadAsStringAsync();
+                Console.WriteLine("/sync response status code:" + response.StatusCode);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = response.Content.ReadAsStringAsync().Result;
+                    Console.WriteLine("response from server:" + responseString);
+
+                    matrixSyncResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixSyncResult>(responseString);
+                    fireSyncCompletedEvent(matrixSyncResult);
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("could not syncAwait(): " + e.Message);
+            }
+
+            return null;
+        }
+
+        public void loadRooms()
+        {
+            loadRoomsAsync();
         }
         public async Task loadRoomsAsync()
         {

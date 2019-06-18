@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -27,14 +28,11 @@ namespace yuck
 
         private void TxtMessage_TextChanged(object sender, EventArgs e)
         {
-
         }
 
         private void TxtMessage_KeyUp(object sender, KeyEventArgs e)
         {
-            //if (e.KeyCode == Keys.Enter)
-            //    send();
-
+            // via Form.AcceptButton proccessed
         }
         private void processChatMessage()
         {
@@ -47,7 +45,6 @@ namespace yuck
             txtChatmessages.SelectionAlignment = HorizontalAlignment.Right;
 
             Businesslogic.Instance.sendMessage(this.roomID, message);
-
         }
 
         private void LstMembers_SelectedIndexChanged(object sender, EventArgs e)
@@ -62,7 +59,39 @@ namespace yuck
 
             // prevent "ding" sound when pressing enter on txtMessage, weired.
             // https://stackoverflow.com/questions/6290967/stop-the-ding-when-pressing-enter
+            // AND: processes message after ENTER pressed on txtMessage
             this.AcceptButton = btnSend;
+
+            Businesslogic.Instance.SyncCompletedEvent += SyncCompletedCallback;
+            Businesslogic.Instance.MessageCompletedEvent += MessageCompletedCallback; ;
+
+            Businesslogic.Instance.syncAsync(null);
+        }
+
+        private void MessageCompletedCallback(MatrixMessagesResult matrixMessagesResult)
+        {
+            //Thread.Sleep(10000);
+            Businesslogic.Instance.messagesAsync(roomID, matrixMessagesResult.end);
+
+            foreach (MatrixMessagesChunkResult matrixMessagesChunkResult in matrixMessagesResult.chunk)
+            {
+                try
+                {
+                    txtChatmessages.AppendText(matrixMessagesChunkResult.user_id + " eventid:" + matrixMessagesChunkResult.event_id + " " + matrixMessagesChunkResult.content.algorithm + " " + matrixMessagesChunkResult.content.ciphertext +  Environment.NewLine);
+                    txtChatmessages.SelectionAlignment = HorizontalAlignment.Left;
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("could not add text: " + e.Message);
+                }
+            }
+        }
+
+        private void SyncCompletedCallback(MatrixSyncResult matrixSyncResult)
+        {
+            //Thread.Sleep(3000);
+            Businesslogic.Instance.messagesAsync(roomID, matrixSyncResult.next_batch);
         }
 
         private void membersLoadedCallback(MatrixMemberResult matrixMemberResult)

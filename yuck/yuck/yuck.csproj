@@ -77,6 +77,8 @@
     <Compile Include="Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
+    <Compile Include="MatrixMessageResult.cs" />
+    <Compile Include="MatrixSyncResult.cs" />
     <Compile Include="MatrixMemberChunkResult.cs" />
     <Compile Include="MatrixJoinedRoomsResult.cs" />
     <Compile Include="MatrixMemberResult.cs" />
