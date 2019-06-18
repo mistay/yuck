@@ -85,7 +85,7 @@ namespace yuck
             MatrixLoginResult matrixLoginResult = null;
             HttpClient client = new HttpClient();
 
-            client.BaseAddress = new Uri(String.Format("https://matrix.st0ne.net/_matrix/client/r0/joined_rooms?access_token={0}", matrixResult.access_token));
+            client.BaseAddress = new Uri(String.Format("https://{0}/_matrix/client/r0/joined_rooms?access_token={1}",Properties.Settings.Default.matrixserver_hostname,  matrixResult.access_token));
             client.DefaultRequestHeaders
                   .Accept
                   .Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -242,7 +242,7 @@ namespace yuck
         internal async Task<MatrixLoginResult> loginAwait()
         {
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(String.Format("https://matrix.st0ne.net/_matrix/client/r0/login"));
+            client.BaseAddress = new Uri(String.Format("https://{0}/_matrix/client/r0/login", Properties.Settings.Default.matrixserver_hostname));
             client.DefaultRequestHeaders
                   .Accept
                   .Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -250,14 +250,16 @@ namespace yuck
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
 
-            String jsonLogin = @"{
+            // todo: escape both username and password or generate json properly. removing " is just a quickfix.
+            String jsonLogin = String.Format(@"{{
                   ""type"": ""m.login.password"",
-                  ""identifier"": {
+                  ""identifier"": {{
                                 ""type"": ""m.id.user"",
-                    ""user"": ""armin""
-                  },
-                  ""password"": ""inhar1B*""
-                }";
+                    ""user"": ""{0}""
+                  }},
+                  ""password"": ""{1}""
+                }}", Properties.Settings.Default.matrixserver_username.Replace("\"", ""), Properties.Settings.Default.matrixserver_password.Replace("\"", ""));
+
 
 
             StringContent myStringContent = new StringContent(jsonLogin);

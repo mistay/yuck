@@ -20,6 +20,7 @@ namespace yuck
         private void Settings_Load(object sender, EventArgs e)
         {
             loadSettings();
+            AcceptButton = btnSave;
 
         }
 
@@ -39,6 +40,14 @@ namespace yuck
             Properties.Settings.Default.Save();
 
             this.Close();
+        }
+
+        private void CbShowPassword_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!cbShowPassword.Checked)
+                txtMatrixserverPassword.PasswordChar = '*';
+            else
+                txtMatrixserverPassword.PasswordChar = '\0';
         }
     }
 }
