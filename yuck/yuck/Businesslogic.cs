@@ -115,19 +115,19 @@ namespace yuck
             return matrixLoginResult;
         }
 
-        public void loadMembers()
+        public void loadMembers(string roomID)
         {
-            loadMembersAsync();
+            loadMembersAsync(roomID);
         }
-        private async Task loadMembersAsync()
+        private async Task loadMembersAsync(string roomID)
         {
-            await loadMembersAwait();
+            await loadMembersAwait(roomID);
         }
-        internal async Task<MatrixLoginResult> loadMembersAwait()
+        internal async Task<MatrixLoginResult> loadMembersAwait(string roomID)
         {
             MatrixLoginResult matrixLoginResult = null;
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(String.Format("https://matrix.st0ne.net/_matrix/client/r0/rooms/!zFCMhWfhBeMNuqXfIR:st0ne.net/members?access_token={0}", matrixResult.access_token));
+            client.BaseAddress = new Uri(String.Format("https://matrix.st0ne.net/_matrix/client/r0/rooms/{0}/members?access_token={1}", roomID, matrixResult.access_token));
             client.DefaultRequestHeaders
                   .Accept
                   .Add(new MediaTypeWithQualityHeaderValue("application/json"));

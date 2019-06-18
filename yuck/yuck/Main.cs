@@ -66,12 +66,15 @@ namespace yuck
 
         private void ListBox1_DoubleClick(object sender, EventArgs e)
         {
-            openChatWindow();
+            openChatWindow(lstRooms.SelectedItem.ToString());
         }
 
-        private void openChatWindow()
+        private void openChatWindow(string roomID)
         {
-            (new Chat()).Show();
+            Chat chat = new Chat();
+            chat.RoomID = roomID;
+            chat.Show();
+
         }
 
         private void StatusStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -81,7 +84,7 @@ namespace yuck
 
         private void LstRooms_DoubleClick(object sender, EventArgs e)
         {
-            openChatWindow();
+            openChatWindow(lstRooms.SelectedItem.ToString() );
         }
 
         private void LstRooms_SelectedIndexChanged(object sender, EventArgs e)
@@ -92,7 +95,7 @@ namespace yuck
         private void LstRooms_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-                openChatWindow();
+                openChatWindow( lstRooms.SelectedItem.ToString() );
         }
 
         private void Main_Resize(object sender, EventArgs e)

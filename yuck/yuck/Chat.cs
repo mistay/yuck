@@ -17,6 +17,9 @@ namespace yuck
             InitializeComponent();
         }
 
+        private string roomID;
+        public string RoomID { get { return roomID; } set { roomID = value;  this.Text = "Yuck Chat Room " + roomID; } }
+
         private void BtnSend_Click(object sender, EventArgs e)
         {
             send(txtMessage.Text);
@@ -46,7 +49,7 @@ namespace yuck
         private void Chat_Load(object sender, EventArgs e)
         {
             Businesslogic.Instance.MembersLoaded += membersLoadedCallback;
-            Businesslogic.Instance.loadMembers();
+            Businesslogic.Instance.loadMembers(RoomID);
         }
 
         private void membersLoadedCallback(MatrixMemberResult matrixMemberResult)
@@ -57,6 +60,11 @@ namespace yuck
             {
                 lstMembers.Items.Add(chunk.user_id);
             }
+        }
+
+        private void TxtChatmessages_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

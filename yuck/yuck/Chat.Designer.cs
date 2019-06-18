@@ -78,6 +78,7 @@
             this.txtChatmessages.Name = "txtChatmessages";
             this.txtChatmessages.Size = new System.Drawing.Size(549, 398);
             this.txtChatmessages.TabIndex = 1;
+            this.txtChatmessages.TextChanged += new System.EventHandler(this.TxtChatmessages_TextChanged);
             // 
             // lstMembers
             // 
