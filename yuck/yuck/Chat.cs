@@ -34,7 +34,7 @@ namespace yuck
         {
             // via Form.AcceptButton proccessed
         }
-        private void processChatMessage()
+        public void processChatMessage()
         {
             string message = txtMessage.Text;
             txtMessage.Text = "";
@@ -45,6 +45,15 @@ namespace yuck
             txtChatmessages.SelectionAlignment = HorizontalAlignment.Right;
 
             Businesslogic.Instance.sendMessage(this.roomID, message);
+        }
+
+        public void processIncomingChatMessage(string message)
+        {
+            string newline = (txtChatmessages.Text == "") ? "" : Environment.NewLine;
+
+            txtChatmessages.AppendText(newline + message);
+            txtChatmessages.SelectionAlignment = HorizontalAlignment.Left;
+
         }
 
         private void LstMembers_SelectedIndexChanged(object sender, EventArgs e)
@@ -62,10 +71,10 @@ namespace yuck
             // AND: processes message after ENTER pressed on txtMessage
             this.AcceptButton = btnSend;
 
-            Businesslogic.Instance.SyncCompletedEvent += SyncCompletedCallback;
-            Businesslogic.Instance.MessageCompletedEvent += MessageCompletedCallback; ;
+            //Businesslogic.Instance.SyncCompletedEvent += SyncCompletedCallback;
+            //Businesslogic.Instance.MessageCompletedEvent += MessageCompletedCallback; ;
 
-            Businesslogic.Instance.syncAsync(null);
+            //Businesslogic.Instance.syncAsync(null);
         }
 
         private void MessageCompletedCallback(MatrixMessagesResult matrixMessagesResult)
@@ -105,6 +114,11 @@ namespace yuck
         }
 
         private void TxtChatmessages_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void TxtChatmessages_TextChanged_1(object sender, EventArgs e)
         {
 
         }

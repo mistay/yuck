@@ -27,12 +27,47 @@ namespace yuck
             Businesslogic.Instance.JoinedRoomsLoadedEvent += JoinedRoomsLoadedCallback;
             Businesslogic.Instance.LoginCompletedEvent += LoginCompltedCallback;
 
+            Businesslogic.Instance.SyncCompletedEvent += SyncCompletedCallback;
+
+            
+
+        }
+
+        private void SyncCompletedCallback(MatrixSyncResult matrixSyncResult)
+        {
+            Businesslogic.Instance.syncAsync(matrixSyncResult.next_batch);
+
+            foreach (Form form in Application.OpenForms)
+            {
+                if (form is Chat)
+                {
+                    Chat chat = (Chat)form;
+                    Console.WriteLine(chat.RoomID);
+
+                    foreach (KeyValuePair<string, MatrixSyncResultTimelineWrapper> messagesForRoomID in matrixSyncResult.rooms.join)
+                    {
+                        if (chat.RoomID == messagesForRoomID.Key)
+                        {
+                            Console.WriteLine("found message for room:" + chat.RoomID);
+
+
+                            MatrixSyncResultTimelineWrapper wrapper = messagesForRoomID.Value;
+                            foreach (MatrixSyncResultEvents events in wrapper.timeline.events)
+                            {
+                                chat.processIncomingChatMessage(events.content.ciphertext);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public void LoginCompltedCallback()
         {
             tsstatus.Text = "Login Completed";
             Businesslogic.Instance.loadRooms();
+
+            Businesslogic.Instance.syncAsync(null);
         }
 
         private void JoinedRoomsLoadedCallback(MatrixJoinedRoomsResult matrixJoinedRoomsResult)
@@ -74,7 +109,6 @@ namespace yuck
             Chat chat = new Chat();
             chat.RoomID = roomID;
             chat.Show();
-
         }
 
         private void StatusStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -112,8 +146,6 @@ namespace yuck
             Show();
             this.WindowState = FormWindowState.Normal;
             notifyIcon1.Visible = false;
-
-
         }
 
         private void SettingsToolStripMenuItem_Click(object sender, EventArgs e)

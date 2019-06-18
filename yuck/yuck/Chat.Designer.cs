@@ -89,6 +89,7 @@
             this.txtChatmessages.Size = new System.Drawing.Size(549, 398);
             this.txtChatmessages.TabIndex = 3;
             this.txtChatmessages.Text = "";
+            this.txtChatmessages.TextChanged += new System.EventHandler(this.TxtChatmessages_TextChanged_1);
             // 
             // tableLayoutPanel2
             // 

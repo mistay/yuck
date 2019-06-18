@@ -137,7 +137,7 @@ namespace yuck
             HttpClient client = new HttpClient();
             MatrixSyncResult matrixSyncResult = null;
 
-            string uri = String.Format("https://{0}/_matrix/client/r0/sync?access_token={1}{2}", Properties.Settings.Default.matrixserver_hostname, matrixResult.access_token, next_batch == null ? "" : "&since=" + next_batch);
+            string uri = String.Format("https://{0}/_matrix/client/r0/sync?timeout=10000&access_token={1}{2}", Properties.Settings.Default.matrixserver_hostname, matrixResult.access_token, next_batch == null ? "" : "&since=" + next_batch);
             Console.WriteLine("uri:" + uri);
 
             client.BaseAddress = new Uri(uri);
@@ -157,6 +157,10 @@ namespace yuck
                     Console.WriteLine("response from server:" + responseString);
 
                     matrixSyncResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixSyncResult>(responseString);
+                    if (responseString.Contains("m.room.encrypted"))
+                    {
+
+                    }
                     fireSyncCompletedEvent(matrixSyncResult);
                 }
 
