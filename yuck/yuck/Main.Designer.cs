@@ -28,18 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsstatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.lstRooms = new System.Windows.Forms.ListBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tsstatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lstRooms = new System.Windows.Forms.ListBox();
+            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -57,6 +60,17 @@
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             this.statusStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.StatusStrip1_ItemClicked);
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 20);
+            // 
+            // tsstatus
+            // 
+            this.tsstatus.Name = "tsstatus";
+            this.tsstatus.Size = new System.Drawing.Size(97, 20);
+            this.tsstatus.Text = "Willkommen!";
             // 
             // menuStrip1
             // 
@@ -117,28 +131,6 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(436, 620);
             this.tableLayoutPanel1.TabIndex = 11;
             // 
-            // lstRooms
-            // 
-            this.lstRooms.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lstRooms.FormattingEnabled = true;
-            this.lstRooms.ItemHeight = 16;
-            this.lstRooms.Location = new System.Drawing.Point(3, 23);
-            this.lstRooms.Name = "lstRooms";
-            this.lstRooms.Size = new System.Drawing.Size(430, 249);
-            this.lstRooms.TabIndex = 9;
-            this.lstRooms.SelectedIndexChanged += new System.EventHandler(this.LstRooms_SelectedIndexChanged);
-            this.lstRooms.DoubleClick += new System.EventHandler(this.LstRooms_DoubleClick);
-            this.lstRooms.KeyUp += new System.Windows.Forms.KeyEventHandler(this.LstRooms_KeyUp);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(52, 17);
-            this.label1.TabIndex = 12;
-            this.label1.Text = "Rooms";
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -159,16 +151,34 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
-            // toolStripStatusLabel1
+            // label1
             // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 20);
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(3, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(52, 17);
+            this.label1.TabIndex = 12;
+            this.label1.Text = "Rooms";
             // 
-            // tsstatus
+            // lstRooms
             // 
-            this.tsstatus.Name = "tsstatus";
-            this.tsstatus.Size = new System.Drawing.Size(97, 20);
-            this.tsstatus.Text = "Willkommen!";
+            this.lstRooms.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lstRooms.FormattingEnabled = true;
+            this.lstRooms.ItemHeight = 16;
+            this.lstRooms.Location = new System.Drawing.Point(3, 23);
+            this.lstRooms.Name = "lstRooms";
+            this.lstRooms.Size = new System.Drawing.Size(430, 249);
+            this.lstRooms.TabIndex = 9;
+            this.lstRooms.SelectedIndexChanged += new System.EventHandler(this.LstRooms_SelectedIndexChanged);
+            this.lstRooms.DoubleClick += new System.EventHandler(this.LstRooms_DoubleClick);
+            this.lstRooms.KeyUp += new System.Windows.Forms.KeyEventHandler(this.LstRooms_KeyUp);
+            // 
+            // notifyIcon1
+            // 
+            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
+            this.notifyIcon1.Text = "notifyIcon1";
+            this.notifyIcon1.Visible = true;
+            this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon1_MouseDoubleClick);
             // 
             // Main
             // 
@@ -180,8 +190,9 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Main";
-            this.Text = "Form1";
+            this.Text = "Yuck";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.Resize += new System.EventHandler(this.Main_Resize);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
@@ -206,6 +217,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel tsstatus;
+        private System.Windows.Forms.NotifyIcon notifyIcon1;
     }
 }
 

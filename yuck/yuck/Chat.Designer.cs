@@ -133,7 +133,7 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "Chat";
-            this.Text = "Chat";
+            this.Text = "YuckRoomChat";
             this.Load += new System.EventHandler(this.Chat_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
