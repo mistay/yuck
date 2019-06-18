@@ -22,7 +22,7 @@ namespace yuck
 
         private void BtnSend_Click(object sender, EventArgs e)
         {
-            send(txtMessage.Text);
+            processChatMessage();
         }
 
         private void TxtMessage_TextChanged(object sender, EventArgs e)
@@ -32,13 +32,22 @@ namespace yuck
 
         private void TxtMessage_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
-                send(txtMessage.Text);
+            //if (e.KeyCode == Keys.Enter)
+            //    send();
+
         }
-        private void send(string message)
+        private void processChatMessage()
         {
-            Businesslogic.Instance.sendMessage(message);
+            string message = txtMessage.Text;
             txtMessage.Text = "";
+
+            string newline = (txtChatmessages.Text == "") ? "" : Environment.NewLine;
+
+            txtChatmessages.AppendText(newline + message);
+            txtChatmessages.SelectionAlignment = HorizontalAlignment.Right;
+
+            Businesslogic.Instance.sendMessage(message);
+
         }
 
         private void LstMembers_SelectedIndexChanged(object sender, EventArgs e)
@@ -50,6 +59,10 @@ namespace yuck
         {
             Businesslogic.Instance.MembersLoaded += membersLoadedCallback;
             Businesslogic.Instance.loadMembers(RoomID);
+
+            // prevent "ding" sound when pressing enter on txtMessage, weired.
+            // https://stackoverflow.com/questions/6290967/stop-the-ding-when-pressing-enter
+            this.AcceptButton = btnSend;
         }
 
         private void membersLoadedCallback(MatrixMemberResult matrixMemberResult)
