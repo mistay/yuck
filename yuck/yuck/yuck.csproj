@@ -78,6 +78,7 @@
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
     <Compile Include="MatrixMessageResult.cs" />
+    <Compile Include="MatrixWhoamiResult.cs" />
     <Compile Include="MatrixSyncResult.cs" />
     <Compile Include="MatrixMemberChunkResult.cs" />
     <Compile Include="MatrixJoinedRoomsResult.cs" />

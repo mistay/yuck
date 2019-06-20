@@ -31,7 +31,7 @@ namespace yuck
         }
         private static readonly HttpClient client = new HttpClient();
         MatrixLoginResult matrixResult;
-
+        private string loggedInUserID;
 
         public delegate void membersLoadedEvent(MatrixMemberResult matrixMemberResult);
         public event membersLoadedEvent MembersLoaded;
@@ -50,6 +50,17 @@ namespace yuck
             if (JoinedRoomsLoadedEvent != null)
             {
                 JoinedRoomsLoadedEvent(matrixJoinedRoomsResult);
+            }
+        }
+
+
+        public delegate void Whoami(MatrixWhoamiResult matrixWhoamiResult);
+        public event Whoami WhoamiEvent;
+        private void fireWhoamiEvent(MatrixWhoamiResult matrixWhoamiResult)
+        {
+            if (WhoamiEvent != null)
+            {
+                WhoamiEvent(matrixWhoamiResult);
             }
         }
 
@@ -98,6 +109,49 @@ namespace yuck
                 MessageCompletedEvent(matrixMessagesResult);
             }
         }
+
+
+
+        public async Task whoamiAsync()
+        {
+            await whoamiAwait();
+        }
+        internal async Task<MatrixWhoamiResult> whoamiAwait()
+        {
+            HttpClient client = new HttpClient();
+            MatrixWhoamiResult matrixWhoamiResult = null;
+
+            string uri = String.Format("https://{0}/_matrix/client/r0/account/whoami?access_token={1}", Properties.Settings.Default.matrixserver_hostname, matrixResult.access_token);
+            client.BaseAddress = new Uri(uri);
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync(client.BaseAddress);
+                Task<string> sss = response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = response.Content.ReadAsStringAsync().Result;
+
+                    matrixWhoamiResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixWhoamiResult>(responseString);
+
+                    this.loggedInUserID = matrixWhoamiResult.user_id;
+
+                    fireWhoamiEvent(matrixWhoamiResult);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("could not syncAwait(): " + e.Message);
+            }
+
+            return null;
+        }
+
+
+
 
 
         public async Task messagesAsync(string roomID, string from)

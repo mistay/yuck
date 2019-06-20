@@ -30,6 +30,14 @@ namespace yuck
             Businesslogic.Instance.SyncCompletedEvent += SyncCompletedCallback;
 
             Businesslogic.Instance.UserPrecenseReceivedEvent += UserPrecnseReceivedCallback;
+
+            Businesslogic.Instance.WhoamiEvent += WhoamiCallback;
+        }
+
+        private void WhoamiCallback(MatrixWhoamiResult matrixWhoamiResult)
+        {
+            tsstatus.Text = "Logged in as " + matrixWhoamiResult.user_id;
+
         }
 
         private void UserPrecnseReceivedCallback(MatrixSyncResult matrixSyncResult)
@@ -86,6 +94,7 @@ namespace yuck
         public void LoginCompltedCallback()
         {
             tsstatus.Text = "Login Completed";
+            Businesslogic.Instance.whoamiAsync();
             Businesslogic.Instance.loadRooms();
 
             Businesslogic.Instance.syncAsync(null);
