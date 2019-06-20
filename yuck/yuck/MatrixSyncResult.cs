@@ -15,6 +15,7 @@ namespace yuck
         public SyncResultRooms rooms { get; set; }
 
         public SyncResultPresence presence { get; set; }
+
     }
 
     public class SyncResultPresence
@@ -63,6 +64,10 @@ namespace yuck
     
     public class MatrixSyncResultContent
     {
+        public string msgtype { get; set; }
+        public string body { get; set; }
+        public string format { get; set; }
+        public string formatted_body { get; set; }
         public string algorithm { get; set; }
         public string sender_key { get; set; }
         public string ciphertext { get; set; }

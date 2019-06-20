@@ -150,7 +150,7 @@ namespace yuck
             HttpClient client = new HttpClient();
             MatrixSyncResult matrixSyncResult = null;
 
-            string uri = String.Format("https://{0}/_matrix/client/r0/sync?timeout=10000&access_token={1}{2}", Properties.Settings.Default.matrixserver_hostname, matrixResult.access_token, next_batch == null ? "" : "&since=" + next_batch);
+            string uri = String.Format("https://{0}/_matrix/client/r0/sync?timeout=120000&access_token={1}{2}", Properties.Settings.Default.matrixserver_hostname, matrixResult.access_token, next_batch == null ? "" : "&since=" + next_batch);
             Console.WriteLine("uri:" + uri);
 
             client.BaseAddress = new Uri(uri);
@@ -163,11 +163,10 @@ namespace yuck
                 HttpResponseMessage response = await client.GetAsync(client.BaseAddress);
                 Task<string> sss = response.Content.ReadAsStringAsync();
                 Console.WriteLine("/sync response status code:" + response.StatusCode);
-
                 if (response.IsSuccessStatusCode)
                 {
                     string responseString = response.Content.ReadAsStringAsync().Result;
-                    Console.WriteLine("response from server:" + responseString);
+                    Console.WriteLine("syncAwait response from server:" + responseString);
 
                     matrixSyncResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixSyncResult>(responseString);
                     if (responseString.Contains("m.room.encrypted"))
@@ -179,16 +178,16 @@ namespace yuck
                     {
                         fireUserPrecenseReceivedEvent(matrixSyncResult);
                     }
-                    
-
-                    fireSyncCompletedEvent(matrixSyncResult);
                 }
+                
 
             }
             catch (Exception e)
             {
                 Console.WriteLine("could not syncAwait(): " + e.Message);
             }
+
+            fireSyncCompletedEvent(matrixSyncResult);
 
             return null;
         }
@@ -273,13 +272,13 @@ namespace yuck
                     }
                     fireMembersLoaded(matrixMemberResult);
 
-                    Console.WriteLine("livedataResult user_id:" + matrixMemberResult.chunk);
+                    Console.WriteLine("matrixMemberResult.chunk:" + matrixMemberResult.chunk);
                 }
 
             }
             catch (Exception e)
             {
-                Console.WriteLine("could not Liveddatapush(): " + e.Message);
+                Console.WriteLine("could not loadMembersAwait(): " + e.Message);
             }
 
             return matrixLoginResult;

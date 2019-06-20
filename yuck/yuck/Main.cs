@@ -30,10 +30,6 @@ namespace yuck
             Businesslogic.Instance.SyncCompletedEvent += SyncCompletedCallback;
 
             Businesslogic.Instance.UserPrecenseReceivedEvent += UserPrecnseReceivedCallback;
-
-
-
-
         }
 
         private void UserPrecnseReceivedCallback(MatrixSyncResult matrixSyncResult)
@@ -41,14 +37,12 @@ namespace yuck
             lstUsers.Items.Clear();
             foreach (SyncResultEvents @event in matrixSyncResult.presence.events)
             {
-                lstUsers.Items.Add(@event.sender + ": " + @event.content.presence);
+                lstUsers.Items.Add(@event.sender + ": " + @event.content.presence + " " + @event.content.currenty_active + " " + @event.content.last_active_ago);
             }
         }
 
         private void SyncCompletedCallback(MatrixSyncResult matrixSyncResult)
         {
-            Businesslogic.Instance.syncAsync(matrixSyncResult.next_batch);
-
             foreach (Form form in Application.OpenForms)
             {
                 if (form is Chat)
@@ -65,12 +59,28 @@ namespace yuck
                             MatrixSyncResultTimelineWrapper wrapper = messagesForRoomID.Value;
                             foreach (MatrixSyncResultEvents events in wrapper.timeline.events)
                             {
-                                chat.processIncomingChatMessage(events.content.ciphertext);
+                                 
+                                if (events.content.msgtype == "m.text")
+                                {
+                                    //unencrypted
+                                    if (events.content.format == "org.matrix.custom.html")
+                                    {
+                                        chat.processIncomingChatMessage(events.sender, events.content.formatted_body);
+
+                                    }
+                                    else
+                                    {
+                                        chat.processIncomingChatMessage(events.sender, events.content.body);
+                                    }
+                                }
+                                //chat.processIncomingChatMessage(events.content.ciphertext);
                             }
                         }
                     }
                 }
             }
+
+            Businesslogic.Instance.syncAsync(matrixSyncResult.next_batch);
         }
 
         public void LoginCompltedCallback()

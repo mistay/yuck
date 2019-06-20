@@ -24,6 +24,8 @@ namespace yuck
         private void BtnSend_Click(object sender, EventArgs e)
         {
             processChatMessage();
+            txtMessage.Focus();
+
         }
 
         private void TxtMessage_TextChanged(object sender, EventArgs e)
@@ -38,21 +40,32 @@ namespace yuck
         {
             string message = txtMessage.Text;
             txtMessage.Text = "";
+            /*
+            string newline = (txtChatmessages.Text == "") ? "" : "\n"; // Environment.NewLine;
 
-            string newline = (txtChatmessages.Text == "") ? "" : Environment.NewLine;
-
+            if (txtChatmessages.SelectionAlignment == HorizontalAlignment.Left)
+                txtChatmessages.SelectionAlignment = HorizontalAlignment.Right;
             txtChatmessages.AppendText(newline + message);
-            txtChatmessages.SelectionAlignment = HorizontalAlignment.Right;
-
+            */
             Businesslogic.Instance.sendMessage(this.roomID, message);
         }
 
-        public void processIncomingChatMessage(string message)
+        public void processIncomingChatMessage(string sender, string message)
         {
             string newline = (txtChatmessages.Text == "") ? "" : Environment.NewLine;
 
             txtChatmessages.AppendText(newline + message);
-            txtChatmessages.SelectionAlignment = HorizontalAlignment.Left;
+
+            if (sender =="@armin:st0ne.net")
+            {
+                if (txtChatmessages.SelectionAlignment == HorizontalAlignment.Left)
+                    txtChatmessages.SelectionAlignment = HorizontalAlignment.Right;
+            } else
+            {
+                if (txtChatmessages.SelectionAlignment == HorizontalAlignment.Right)
+                    txtChatmessages.SelectionAlignment = HorizontalAlignment.Left;
+            }
+
 
         }
 
