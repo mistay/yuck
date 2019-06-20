@@ -29,8 +29,20 @@ namespace yuck
 
             Businesslogic.Instance.SyncCompletedEvent += SyncCompletedCallback;
 
-            
+            Businesslogic.Instance.UserPrecenseReceivedEvent += UserPrecnseReceivedCallback;
 
+
+
+
+        }
+
+        private void UserPrecnseReceivedCallback(MatrixSyncResult matrixSyncResult)
+        {
+            lstUsers.Items.Clear();
+            foreach (SyncResultEvents @event in matrixSyncResult.presence.events)
+            {
+                lstUsers.Items.Add(@event.sender + ": " + @event.content.presence);
+            }
         }
 
         private void SyncCompletedCallback(MatrixSyncResult matrixSyncResult)
@@ -49,7 +61,6 @@ namespace yuck
                         if (chat.RoomID == messagesForRoomID.Key)
                         {
                             Console.WriteLine("found message for room:" + chat.RoomID);
-
 
                             MatrixSyncResultTimelineWrapper wrapper = messagesForRoomID.Value;
                             foreach (MatrixSyncResultEvents events in wrapper.timeline.events)

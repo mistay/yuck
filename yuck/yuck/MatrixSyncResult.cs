@@ -13,9 +13,29 @@ namespace yuck
         public string next_batch { get; set; }
 
         public SyncResultRooms rooms { get; set; }
+
+        public SyncResultPresence presence { get; set; }
     }
 
+    public class SyncResultPresence
+    {
+        public List<SyncResultEvents> events { get; set; }
+    }
+    public class SyncResultEvents
+    {
+        public string type { get; set; }
+        public string sender { get; set; }
+        public SyncResultContent content { get; set; }
 
+    }
+
+    public class SyncResultContent
+    {
+        public string presence { get; set; }
+        public long last_active_ago { get; set; }
+        public bool currenty_active { get; set; }
+
+    }
     public class SyncResultRooms
     {
         public Dictionary<string, MatrixSyncResultTimelineWrapper> join { get; set; }

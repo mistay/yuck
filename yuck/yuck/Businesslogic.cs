@@ -75,6 +75,19 @@ namespace yuck
             }
         }
 
+        public delegate void UserPrecenseReceived(MatrixSyncResult matrixSyncResult);
+        public event UserPrecenseReceived UserPrecenseReceivedEvent;
+        private void fireUserPrecenseReceivedEvent(MatrixSyncResult matrixSyncResult)
+        {
+            if (UserPrecenseReceivedEvent != null)
+            {
+                UserPrecenseReceivedEvent(matrixSyncResult);
+            }
+        }
+
+
+        
+
 
         public delegate void MessageCompleted(MatrixMessagesResult matrixMessagesResult);
         public event MessageCompleted MessageCompletedEvent;
@@ -161,6 +174,13 @@ namespace yuck
                     {
 
                     }
+
+                    if (matrixSyncResult.presence.events != null)
+                    {
+                        fireUserPrecenseReceivedEvent(matrixSyncResult);
+                    }
+                    
+
                     fireSyncCompletedEvent(matrixSyncResult);
                 }
 
