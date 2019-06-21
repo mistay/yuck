@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace yuck
 {
@@ -53,6 +56,15 @@ namespace yuck
             }
         }
 
+        internal static Uri MXC2HTTP(string mxc_url)
+        {
+            if (mxc_url == null)
+                return null;
+
+            Uri u = new Uri(mxc_url);
+
+            return new Uri(String.Format("https://{0}/_matrix/media/r0/download/{1}{2}", Properties.Settings.Default.matrixserver_hostname, u.Host, u.AbsolutePath ));
+        }
 
         public delegate void Whoami(MatrixWhoamiResult matrixWhoamiResult);
         public event Whoami WhoamiEvent;
@@ -86,6 +98,15 @@ namespace yuck
             }
         }
 
+        public delegate void AvatarURLReceived(MatrixAvatarResult matrixAvatarResult);
+        public event AvatarURLReceived AvatarURLReceivedEvent;
+        private void fireAvatarURLReceivedEvent(MatrixAvatarResult matrixAvatarResult)
+        {
+            if (AvatarURLReceivedEvent != null)
+            {
+                AvatarURLReceivedEvent(matrixAvatarResult);
+            }
+        }
 
         public delegate void SyncCompleted(MatrixSyncResult matrixSyncResult);
         public event SyncCompleted SyncCompletedEvent;
@@ -122,6 +143,15 @@ namespace yuck
         }
 
 
+        public delegate void MediadownloadCompleted(Image image);
+        public event MediadownloadCompleted MediadownloadCompletedEvent;
+        private void fireMediadownloadCompletedEvent(Image image)
+        {
+            if (MediadownloadCompletedEvent != null)
+            {
+                MediadownloadCompletedEvent(image);
+            }
+        }
 
 
         public async Task resolveRoomnameAsync(string roomID)
@@ -165,7 +195,86 @@ namespace yuck
         }
 
 
+        public async Task downloadAvatarURLAsync(string user_id)
+        {
+            await downloadAvatarURLAwait(user_id);
+        }
+        internal async Task<MatrixAvatarResult> downloadAvatarURLAwait(string user_id)
+        {
+            HttpClient client = new HttpClient();
+            MatrixAvatarResult matrixAvatarResult;
 
+            string uri = String.Format("https://{0}/_matrix/client/r0/profile/{1}/avatar_url", Properties.Settings.Default.matrixserver_hostname,  (user_id));
+            client.BaseAddress = new Uri(uri);
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync(client.BaseAddress);
+                Task<string> sss = response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = response.Content.ReadAsStringAsync().Result;
+
+                    matrixAvatarResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixAvatarResult>(responseString);
+
+                    fireAvatarURLReceivedEvent(matrixAvatarResult);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("could not downloadAvatarURLAwait(): " + e.Message);
+            }
+
+            return null;
+        }
+
+        public async Task downloadMediaAsync(Uri uri)
+        {
+            await downloadMediaAwait(uri);
+        }
+        internal async Task<Image> downloadMediaAwait(Uri uri)
+        {
+            HttpClient client = new HttpClient();
+
+            //string uri = String.Format("https://{0}/_matrix/media/r0/download/st0ne.net/wEmUPhSlPdqDNlBHxlBAHAVx", Properties.Settings.Default.matrixserver_hostname);
+            //client.BaseAddress = new Uri(uri);
+            client.BaseAddress = uri;
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync(client.BaseAddress);
+                Task<string> sss = response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+
+                    Stream s = response.Content.ReadAsStreamAsync().Result;
+
+                    //%%string responseString = response.Content.ReadAsStringAsync().Result;
+                   // MemoryStream s = new MemoryStream();
+
+                   // byte[] buffer = Encoding.ASCII.GetBytes(responseString.ToCharArray());
+                    ////s.Write(buffer, 0, buffer.Length);
+                    //s.Flush();
+                    s.Seek(0, SeekOrigin.Begin);
+
+                    Image i = Image.FromStream(s);
+
+                    fireMediadownloadCompletedEvent(i);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("could not downloadMediaAwait(): " + e.Message);
+            }
+
+            return null;
+        }
 
         public async Task whoamiAsync()
         {
@@ -405,6 +514,63 @@ namespace yuck
         {
             await loginAwait();
         }
+
+
+
+        public async Task setPresence(string roomID, string message)
+        {
+            await setPresenceAwait(roomID, message);
+        }
+
+        internal async Task<MatrixLoginResult> setPresenceAwait(string status, string status_message)
+        {
+            HttpClient client = new HttpClient();
+
+            string uri = String.Format("https://{0}/_matrix/client/r0/presence/{1}/status?access_token={2}", Properties.Settings.Default.matrixserver_hostname, HttpUtility.UrlEncode(loggedInUserID), matrixResult.access_token);
+            Console.WriteLine("uri: " + uri);
+            client.BaseAddress = new Uri(uri);
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
+
+            String template = @"
+                  ""presence"": ""{0}"",
+                  ""status_msg"": ""{1}""
+                ";
+            String jsonLogin = String.Format(template, status.ToLower(), status_message);
+            jsonLogin = "{" + jsonLogin + "}";
+
+
+            StringContent myStringContent = new StringContent(jsonLogin);
+            try
+            {
+                Console.WriteLine("calling: " + client.BaseAddress + " w/ content: " + myStringContent);
+                HttpResponseMessage response = await client.PutAsync(client.BaseAddress, myStringContent);
+
+                Task<string> sss = response.Content.ReadAsStringAsync();
+
+                Console.WriteLine("response status code:" + response.StatusCode);
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    string responseString = response.Content.ReadAsStringAsync().Result;
+                    Console.WriteLine("response from server:" + responseString);
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("could not setPresenceAwait(): " + e.Message);
+            }
+            return null;
+        }
+
+
+
 
 
         public async Task sendMessage(string roomID, string message)

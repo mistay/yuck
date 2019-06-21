@@ -223,6 +223,7 @@
             this.pbAvatar.Size = new System.Drawing.Size(64, 68);
             this.pbAvatar.TabIndex = 0;
             this.pbAvatar.TabStop = false;
+            this.pbAvatar.Click += new System.EventHandler(this.PbAvatar_Click);
             // 
             // tableLayoutPanel3
             // 
@@ -243,6 +244,7 @@
             // cbPresence
             // 
             this.cbPresence.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cbPresence.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbPresence.FormattingEnabled = true;
             this.cbPresence.Location = new System.Drawing.Point(3, 37);
             this.cbPresence.Name = "cbPresence";

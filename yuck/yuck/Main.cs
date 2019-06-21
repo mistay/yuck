@@ -41,11 +41,29 @@ namespace yuck
 
             cbPresence.Text = Properties.Settings.Default.user_presence;
 
+            Businesslogic.Instance.MediadownloadCompletedEvent += MediadownloadedCallback;
+
+            
+            Businesslogic.Instance.AvatarURLReceivedEvent += AvatarURLReceivedCallback;
+        }
+
+        private void AvatarURLReceivedCallback(MatrixAvatarResult matrixAvatarResult)
+        {
+            Uri uri = Businesslogic.MXC2HTTP(matrixAvatarResult.avatar_url);
+            Businesslogic.Instance.downloadMediaAsync(uri);
+        }
+
+        private void MediadownloadedCallback(Image image)
+        {
+            pbAvatar.Image = image;
+            pbAvatar.SizeMode = PictureBoxSizeMode.StretchImage;
         }
 
         private void WhoamiCallback(MatrixWhoamiResult matrixWhoamiResult)
         {
             lblUsername.Text = matrixWhoamiResult.user_id;
+
+            Businesslogic.Instance.downloadAvatarURLAsync(matrixWhoamiResult.user_id);
 
         }
 
@@ -261,6 +279,14 @@ namespace yuck
 
             if (cbPresence.Text == "Online")
                 Businesslogic.Instance.login();
+
+            Businesslogic.Instance.setPresenceAwait(cbPresence.Text, "hello, i',m here!");
+        }
+
+        private void PbAvatar_Click(object sender, EventArgs e)
+        {
+            //Businesslogic.Instance.downloadMediaAwait();
+
         }
     }
 }
