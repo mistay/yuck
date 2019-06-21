@@ -45,6 +45,7 @@ namespace yuck
     public class MatrixSyncResultTimelineWrapper
     {
         public MatrixSyncResultTimeline timeline { get; set; }
+        public MatrixSyncResultEphemeral ephemeral { get; set; }
     }
 
     public class MatrixSyncResultTimeline
@@ -52,6 +53,16 @@ namespace yuck
         public List<MatrixSyncResultEvents> events { get; set; }
     }
 
+    public class MatrixSyncResultEphemeral
+    {
+        public List<MatrixSyncResultEphemeralEvents> events { get; set; }
+    }
+
+    public class MatrixSyncResultEphemeralEvents
+    {
+        public string type { get; set; }
+        public MatrixSyncResultEphemeralContent content { get; set; }
+    }
     public class MatrixSyncResultEvents
     {
         public string type { get; set; }
@@ -62,6 +73,11 @@ namespace yuck
 
     }
     
+    public class MatrixSyncResultEphemeralContent
+    {
+        public List<string> user_ids { get; set; }
+
+    }
     public class MatrixSyncResultContent
     {
         public string msgtype { get; set; }

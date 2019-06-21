@@ -45,7 +45,28 @@ namespace yuck
 
             
             Businesslogic.Instance.AvatarURLReceivedEvent += AvatarURLReceivedCallback;
+
+            Businesslogic.Instance.TypingEvent += TypingCompletedCallback;
         }
+
+        private void TypingCompletedCallback(List<string> user_ids)
+        {
+            string status;
+            if (user_ids.Count == 0)
+            {
+                status = "";
+            }
+            else if(user_ids.Count == 1)
+            {
+                status = String.Join(" ", user_ids) + " is typing...";
+            }
+            else
+            {
+                status = String.Join(" ", user_ids) + " are typing...";
+            }
+
+            tsstatus.Text = status;
+;        }
 
         private void AvatarURLReceivedCallback(MatrixAvatarResult matrixAvatarResult)
         {

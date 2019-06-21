@@ -154,6 +154,17 @@ namespace yuck
         }
 
 
+        public delegate void Typing(List<string> user_ids);
+        public event Typing TypingEvent;
+        private void fireTypingEvent(List<string> user_ids)
+        {
+            if (TypingEvent != null)
+            {
+                TypingEvent(user_ids);
+            }
+        }
+
+
         public async Task resolveRoomnameAsync(string roomID)
         {
             await resolveRoomnameAwait(roomID);
@@ -387,6 +398,28 @@ namespace yuck
                     Console.WriteLine("syncAwait response from server:" + responseString);
 
                     matrixSyncResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixSyncResult>(responseString);
+
+                    foreach (KeyValuePair<string, MatrixSyncResultTimelineWrapper> wrapper in matrixSyncResult.rooms.join)
+                    {
+                        foreach (MatrixSyncResultEphemeralEvents @event in wrapper.Value.ephemeral.events)
+                        {
+                            fireTypingEvent(@event.content.user_ids);
+
+                            if (@event.content.user_ids.Count == 0)
+                            {
+                                Console.WriteLine("noone is typing...");
+                            }
+                            else
+                            {
+
+                                foreach (string user_id in @event.content.user_ids)
+                                {
+                                    Console.WriteLine("user: " + user_id + "is typing ...");
+                                }
+                            }
+                        }
+                    }
+
                     if (responseString.Contains("m.room.encrypted"))
                     {
 
