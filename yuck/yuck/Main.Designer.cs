@@ -206,6 +206,7 @@
             // pbAvatar
             // 
             this.pbAvatar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pbAvatar.InitialImage = null;
             this.pbAvatar.Location = new System.Drawing.Point(3, 3);
             this.pbAvatar.Name = "pbAvatar";
             this.pbAvatar.Size = new System.Drawing.Size(74, 68);

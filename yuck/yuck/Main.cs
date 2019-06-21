@@ -50,7 +50,16 @@ namespace yuck
         private void AvatarURLReceivedCallback(MatrixAvatarResult matrixAvatarResult)
         {
             Uri uri = Businesslogic.MXC2HTTP(matrixAvatarResult.avatar_url);
-            Businesslogic.Instance.downloadMediaAsync(uri);
+
+            if (uri == null)
+            {
+                pbAvatar.Image = Properties.Resources.User_Avatar;
+                pbAvatar.SizeMode = PictureBoxSizeMode.Zoom;
+            }
+            else
+            {
+                Businesslogic.Instance.downloadMediaAsync(uri);
+            }
         }
 
         private void MediadownloadedCallback(Image image)
@@ -223,10 +232,10 @@ namespace yuck
             openChatWindow(((MatrixRoom)lstRooms.SelectedItem));
         }
 
-        private void openChatWindow(MatrixRoom gUIListboxRoomEntry)
+        private void openChatWindow(MatrixRoom matrixRoom)
         {
             Chat chat = new Chat();
-            chat.gUIListboxRoomEntry = gUIListboxRoomEntry;
+            chat.matrixRoom = matrixRoom;
             chat.Show();
         }
 
