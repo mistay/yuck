@@ -40,7 +40,6 @@
             this.lstUsers = new System.Windows.Forms.ListBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label2 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lstRooms = new System.Windows.Forms.ListBox();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
@@ -63,9 +62,9 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
             this.tsstatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 877);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 544);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(716, 25);
+            this.statusStrip1.Size = new System.Drawing.Size(328, 25);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             this.statusStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.StatusStrip1_ItemClicked);
@@ -88,7 +87,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(716, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(328, 28);
             this.menuStrip1.TabIndex = 3;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -120,9 +119,9 @@
             this.lstUsers.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lstUsers.FormattingEnabled = true;
             this.lstUsers.ItemHeight = 16;
-            this.lstUsers.Location = new System.Drawing.Point(3, 452);
+            this.lstUsers.Location = new System.Drawing.Point(3, 286);
             this.lstUsers.Name = "lstUsers";
-            this.lstUsers.Size = new System.Drawing.Size(710, 323);
+            this.lstUsers.Size = new System.Drawing.Size(322, 157);
             this.lstUsers.TabIndex = 10;
             this.lstUsers.SelectedIndexChanged += new System.EventHandler(this.ListBox1_SelectedIndexChanged);
             this.lstUsers.DoubleClick += new System.EventHandler(this.ListBox1_DoubleClick);
@@ -132,7 +131,6 @@
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.button1, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.lstRooms, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.lstUsers, 0, 4);
@@ -147,28 +145,18 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 70F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(716, 849);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(328, 516);
             this.tableLayoutPanel1.TabIndex = 11;
+            this.tableLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.TableLayoutPanel1_Paint);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 429);
+            this.label2.Location = new System.Drawing.Point(3, 263);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(45, 17);
             this.label2.TabIndex = 12;
             this.label2.Text = "Users";
-            // 
-            // button1
-            // 
-            this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button1.Location = new System.Drawing.Point(3, 781);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(710, 65);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "login";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
             // label1
             // 
@@ -186,7 +174,7 @@
             this.lstRooms.ItemHeight = 16;
             this.lstRooms.Location = new System.Drawing.Point(3, 103);
             this.lstRooms.Name = "lstRooms";
-            this.lstRooms.Size = new System.Drawing.Size(710, 323);
+            this.lstRooms.Size = new System.Drawing.Size(322, 157);
             this.lstRooms.TabIndex = 9;
             this.lstRooms.SelectedIndexChanged += new System.EventHandler(this.LstRooms_SelectedIndexChanged);
             this.lstRooms.DoubleClick += new System.EventHandler(this.LstRooms_DoubleClick);
@@ -202,7 +190,7 @@
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.ColumnCount = 3;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 70F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.Controls.Add(this.pbAvatar, 0, 0);
@@ -212,7 +200,7 @@
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(710, 74);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(322, 74);
             this.tableLayoutPanel2.TabIndex = 13;
             // 
             // pbAvatar
@@ -220,7 +208,7 @@
             this.pbAvatar.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbAvatar.Location = new System.Drawing.Point(3, 3);
             this.pbAvatar.Name = "pbAvatar";
-            this.pbAvatar.Size = new System.Drawing.Size(64, 68);
+            this.pbAvatar.Size = new System.Drawing.Size(74, 68);
             this.pbAvatar.TabIndex = 0;
             this.pbAvatar.TabStop = false;
             this.pbAvatar.Click += new System.EventHandler(this.PbAvatar_Click);
@@ -233,12 +221,12 @@
             this.tableLayoutPanel3.Controls.Add(this.cbPresence, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.lblUsername, 0, 0);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(123, 3);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(133, 3);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(584, 68);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(186, 68);
             this.tableLayoutPanel3.TabIndex = 1;
             // 
             // cbPresence
@@ -248,7 +236,7 @@
             this.cbPresence.FormattingEnabled = true;
             this.cbPresence.Location = new System.Drawing.Point(3, 37);
             this.cbPresence.Name = "cbPresence";
-            this.cbPresence.Size = new System.Drawing.Size(578, 24);
+            this.cbPresence.Size = new System.Drawing.Size(180, 24);
             this.cbPresence.TabIndex = 0;
             this.cbPresence.SelectedIndexChanged += new System.EventHandler(this.CbPresence_SelectedIndexChanged);
             // 
@@ -258,14 +246,14 @@
             this.lblUsername.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblUsername.Location = new System.Drawing.Point(3, 0);
             this.lblUsername.Name = "lblUsername";
-            this.lblUsername.Size = new System.Drawing.Size(578, 34);
+            this.lblUsername.Size = new System.Drawing.Size(180, 34);
             this.lblUsername.TabIndex = 1;
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(716, 902);
+            this.ClientSize = new System.Drawing.Size(328, 569);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
@@ -299,7 +287,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ListBox lstRooms;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel tsstatus;
         private System.Windows.Forms.NotifyIcon notifyIcon1;

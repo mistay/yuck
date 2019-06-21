@@ -56,7 +56,7 @@ namespace yuck
         private void MediadownloadedCallback(Image image)
         {
             pbAvatar.Image = image;
-            pbAvatar.SizeMode = PictureBoxSizeMode.StretchImage;
+            pbAvatar.SizeMode = PictureBoxSizeMode.Zoom;
         }
 
         private void WhoamiCallback(MatrixWhoamiResult matrixWhoamiResult)
@@ -286,6 +286,11 @@ namespace yuck
         private void PbAvatar_Click(object sender, EventArgs e)
         {
             //Businesslogic.Instance.downloadMediaAwait();
+
+        }
+
+        private void TableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
 
         }
     }
