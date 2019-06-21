@@ -32,7 +32,11 @@ namespace yuck
             Businesslogic.Instance.UserPrecenseReceivedEvent += UserPrecnseReceivedCallback;
 
             Businesslogic.Instance.WhoamiEvent += WhoamiCallback;
+
+            Businesslogic.Instance.RoomResolvedEvent += RoomResolvedCallback;
         }
+
+        
 
         private void WhoamiCallback(MatrixWhoamiResult matrixWhoamiResult)
         {
@@ -100,15 +104,77 @@ namespace yuck
             Businesslogic.Instance.syncAsync(null);
         }
 
+        private void RoomResolvedCallback()
+        {
+            Console.WriteLine("RoomResolvedCallback()");
+            foreach (KeyValuePair<string, string> cacheEntry in Businesslogic.Instance.roomCache)
+            {
+                foreach (MatrixRoom entry in lstRooms.Items)
+                {
+                    if (entry.roomID == cacheEntry.Key)
+                    {
+                        Console.WriteLine("RoomResolvedCallback() entry.roomID: " + entry.roomID + " value: " + cacheEntry.Value);
+
+                        // found
+                        entry.roomNameHumanReadable = cacheEntry.Value;
+                        break;
+                    }
+                }
+            }
+            refreshlstRoomsUpdate();
+        }
+
+        private void refreshlstRoomsUpdate()
+        {
+            //https://stackoverflow.com/questions/33175381/how-we-can-refresh-items-text-in-listbox-without-reinserting-it
+            for (int i = 0; i < lstRooms.Items.Count; i++)
+            {
+                lstRooms.Items[i] = lstRooms.Items[i];
+            }
+        }
         private void JoinedRoomsLoadedCallback(MatrixJoinedRoomsResult matrixJoinedRoomsResult)
         {
             lstRooms.Items.Clear();
 
             foreach (string room in matrixJoinedRoomsResult.joined_rooms)
             {
-                lstRooms.Items.Add(room);
+                // todo: cache lookup needed? could be in cache, right?
+
+                MatrixRoom gUIListboxRoomEntry = new MatrixRoom();
+                gUIListboxRoomEntry.roomID = room;
+
+                Console.WriteLine("added room:  " + room);
+                lstRooms.Items.Add(gUIListboxRoomEntry);
+
+                Businesslogic.Instance.resolveRoomnameAsync(room);
+
+                /*
+                string found = null;
+                foreach (KeyValuePair<string, string> roomName in roomCache)
+                {
+                    if (roomName.Key == room)
+                    {
+                        // found
+                        found = roomName.Value;
+                        break;
+                    }
+                }
+
+                if (found != null)
+                {
+                    lstRooms.Items.Add(found);
+                }
+                else
+                {
+                    
+                }*/
+
+
+                
             }
         }
+
+
 
         MatrixLoginResult matrixResult;
         private void Button1_Click(object sender, EventArgs e)
@@ -131,13 +197,13 @@ namespace yuck
 
         private void ListBox1_DoubleClick(object sender, EventArgs e)
         {
-            openChatWindow(lstRooms.SelectedItem.ToString());
+            openChatWindow(((MatrixRoom)lstRooms.SelectedItem));
         }
 
-        private void openChatWindow(string roomID)
+        private void openChatWindow(MatrixRoom gUIListboxRoomEntry)
         {
             Chat chat = new Chat();
-            chat.RoomID = roomID;
+            chat.gUIListboxRoomEntry = gUIListboxRoomEntry;
             chat.Show();
         }
 
@@ -148,7 +214,7 @@ namespace yuck
 
         private void LstRooms_DoubleClick(object sender, EventArgs e)
         {
-            openChatWindow(lstRooms.SelectedItem.ToString() );
+            openChatWindow(((MatrixRoom)lstRooms.SelectedItem));
         }
 
         private void LstRooms_SelectedIndexChanged(object sender, EventArgs e)
@@ -159,7 +225,7 @@ namespace yuck
         private void LstRooms_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-                openChatWindow( lstRooms.SelectedItem.ToString() );
+                openChatWindow((MatrixRoom)lstRooms.SelectedItem);
         }
 
         private void Main_Resize(object sender, EventArgs e)

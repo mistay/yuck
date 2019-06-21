@@ -65,6 +65,17 @@ namespace yuck
         }
 
 
+        public delegate void RoomResolved();
+        public event RoomResolved RoomResolvedEvent;
+        private void fireRoomResolvedEvent()
+        {
+            if (RoomResolvedEvent != null)
+            {
+                RoomResolvedEvent();
+            }
+        }
+
+
         public delegate void LoginCompleted();
         public event LoginCompleted LoginCompletedEvent;
         private void fireLoginCompletedEvent()
@@ -109,6 +120,50 @@ namespace yuck
                 MessageCompletedEvent(matrixMessagesResult);
             }
         }
+
+
+
+
+        public async Task resolveRoomnameAsync(string roomID)
+        {
+            await resolveRoomnameAwait(roomID);
+        }
+
+        public Dictionary<string, string> roomCache = new Dictionary<string, string>();
+
+        internal async Task<MatrixRoomResolvedResult> resolveRoomnameAwait(string roomID)
+        {
+            HttpClient client = new HttpClient();
+            MatrixRoomResolvedResult matrixRoomResolvedResult = null;
+
+            string uri = String.Format("https://{0}/_matrix/client/r0/rooms/{1}/state/m.room.name?access_token={2}", Properties.Settings.Default.matrixserver_hostname, roomID, matrixResult.access_token);
+            client.BaseAddress = new Uri(uri);
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync(client.BaseAddress);
+                Task<string> sss = response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = response.Content.ReadAsStringAsync().Result;
+
+                    matrixRoomResolvedResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixRoomResolvedResult>(responseString);
+                    roomCache.Add(roomID, matrixRoomResolvedResult.name);
+
+                    fireRoomResolvedEvent();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("could not resolveRoomnameAwait(): " + e.Message);
+            }
+
+            return null;
+        }
+
 
 
 
@@ -278,6 +333,8 @@ namespace yuck
                     MatrixJoinedRoomsResult matrixJoinedRoomsResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixJoinedRoomsResult>(responseString);
 
                     fireJoinedRoomyLoadedEvent(matrixJoinedRoomsResult);
+
+
                 }
 
             }

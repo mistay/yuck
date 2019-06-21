@@ -70,6 +70,7 @@
     <Compile Include="Chat.Designer.cs">
       <DependentUpon>Chat.cs</DependentUpon>
     </Compile>
+    <Compile Include="MatrixRoom.cs" />
     <Compile Include="MatrixLoginResult.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
@@ -77,6 +78,7 @@
     <Compile Include="Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
+    <Compile Include="MatrixRoomResolved.cs" />
     <Compile Include="MatrixMessageResult.cs" />
     <Compile Include="MatrixWhoamiResult.cs" />
     <Compile Include="MatrixSyncResult.cs" />

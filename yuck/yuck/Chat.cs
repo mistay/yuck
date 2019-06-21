@@ -18,8 +18,8 @@ namespace yuck
             InitializeComponent();
         }
 
-        private string roomID;
-        public string RoomID { get { return roomID; } set { roomID = value;  this.Text = "Yuck Chat Room " + roomID; } }
+        internal MatrixRoom gUIListboxRoomEntry;
+        public string RoomID { get { return gUIListboxRoomEntry.roomID; } set { gUIListboxRoomEntry.roomID = value; this.Text = "Yuck Chat Room " + gUIListboxRoomEntry.roomID; } }
 
         private void BtnSend_Click(object sender, EventArgs e)
         {
@@ -47,7 +47,7 @@ namespace yuck
                 txtChatmessages.SelectionAlignment = HorizontalAlignment.Right;
             txtChatmessages.AppendText(newline + message);
             */
-            Businesslogic.Instance.sendMessage(this.roomID, message);
+            Businesslogic.Instance.sendMessage(gUIListboxRoomEntry.roomID , message);
         }
 
         public void processIncomingChatMessage(string sender, string message)
@@ -93,7 +93,7 @@ namespace yuck
         private void MessageCompletedCallback(MatrixMessagesResult matrixMessagesResult)
         {
             //Thread.Sleep(10000);
-            Businesslogic.Instance.messagesAsync(roomID, matrixMessagesResult.end);
+            Businesslogic.Instance.messagesAsync( gUIListboxRoomEntry.roomID  , matrixMessagesResult.end);
 
             foreach (MatrixMessagesChunkResult matrixMessagesChunkResult in matrixMessagesResult.chunk)
             {
@@ -113,7 +113,7 @@ namespace yuck
         private void SyncCompletedCallback(MatrixSyncResult matrixSyncResult)
         {
             //Thread.Sleep(3000);
-            Businesslogic.Instance.messagesAsync(roomID, matrixSyncResult.next_batch);
+            Businesslogic.Instance.messagesAsync(gUIListboxRoomEntry.roomID, matrixSyncResult.next_batch);
         }
 
         private void membersLoadedCallback(MatrixMemberResult matrixMemberResult)
