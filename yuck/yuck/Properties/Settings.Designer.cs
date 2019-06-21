@@ -58,5 +58,17 @@ namespace yuck.Properties {
                 this["matrixserver_hostname"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("offline")]
+        public string user_presence {
+            get {
+                return ((string)(this["user_presence"]));
+            }
+            set {
+                this["user_presence"] = value;
+            }
+        }
     }
 }

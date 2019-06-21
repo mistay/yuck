@@ -34,13 +34,18 @@ namespace yuck
             Businesslogic.Instance.WhoamiEvent += WhoamiCallback;
 
             Businesslogic.Instance.RoomResolvedEvent += RoomResolvedCallback;
-        }
 
-        
+            cbPresence.Items.Add("Online");
+            cbPresence.Items.Add("Offline");
+            cbPresence.Items.Add("Unavailable");
+
+            cbPresence.Text = Properties.Settings.Default.user_presence;
+
+        }
 
         private void WhoamiCallback(MatrixWhoamiResult matrixWhoamiResult)
         {
-            tsstatus.Text = "Logged in as " + matrixWhoamiResult.user_id;
+            lblUsername.Text = matrixWhoamiResult.user_id;
 
         }
 
@@ -247,6 +252,15 @@ namespace yuck
         private void SettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             (new Settings()).ShowDialog();
+        }
+
+        private void CbPresence_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.user_presence = cbPresence.Text;
+            Properties.Settings.Default.Save();
+
+            if (cbPresence.Text == "Online")
+                Businesslogic.Instance.login();
         }
     }
 }

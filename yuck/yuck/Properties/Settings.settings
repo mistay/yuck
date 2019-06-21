@@ -11,5 +11,8 @@
     <Setting Name="matrixserver_hostname" Type="System.String" Scope="User">
       <Value Profile="(Default)">matrix.example.com</Value>
     </Setting>
+    <Setting Name="user_presence" Type="System.String" Scope="User">
+      <Value Profile="(Default)">offline</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
