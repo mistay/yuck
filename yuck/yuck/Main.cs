@@ -41,7 +41,7 @@ namespace yuck
 
             cbPresence.Text = Properties.Settings.Default.user_presence;
 
-            Businesslogic.Instance.MediadownloadCompletedEvent += MediadownloadedCallback;
+            Businesslogic.Instance.AvatarDownloadCompletedEvent += AvatarDownloadedCallback;
 
             
             Businesslogic.Instance.AvatarURLReceivedEvent += AvatarURLReceivedCallback;
@@ -79,11 +79,11 @@ namespace yuck
             }
             else
             {
-                Businesslogic.Instance.downloadMediaAsync(uri);
+                Businesslogic.Instance.downloadAvatar(uri);
             }
         }
 
-        private void MediadownloadedCallback(Image image)
+        private void AvatarDownloadedCallback(Image image)
         {
             pbAvatar.Image = image;
             pbAvatar.SizeMode = PictureBoxSizeMode.Zoom;
@@ -131,37 +131,55 @@ namespace yuck
 
         private void SyncCompletedCallback(MatrixSyncResult matrixSyncResult)
         {
-            foreach (Form form in Application.OpenForms)
-            {
-                if (form is Chat)
+            if (matrixSyncResult != null) {
+
+
+                foreach (Form form in Application.OpenForms)
                 {
-                    Chat chat = (Chat)form;
-                    Console.WriteLine(chat.RoomID);
-
-                    foreach (KeyValuePair<string, MatrixSyncResultTimelineWrapper> messagesForRoomID in matrixSyncResult.rooms.join)
+                    if (form is Chat)
                     {
-                        if (chat.RoomID == messagesForRoomID.Key)
+                        Chat chat = (Chat)form;
+                        Console.WriteLine(chat.RoomID);
+
+
+                        foreach (KeyValuePair<string, MatrixSyncResultTimelineWrapper> messagesForRoomID in matrixSyncResult.rooms.join)
                         {
-                            Console.WriteLine("found message for room:" + chat.RoomID);
-
-                            MatrixSyncResultTimelineWrapper wrapper = messagesForRoomID.Value;
-                            foreach (MatrixSyncResultEvents events in wrapper.timeline.events)
+                            if (chat.RoomID == messagesForRoomID.Key)
                             {
-                                 
-                                if (events.content.msgtype == "m.text")
+                                Console.WriteLine("found message for room:" + chat.RoomID);
+
+                                MatrixSyncResultTimelineWrapper wrapper = messagesForRoomID.Value;
+                                foreach (MatrixSyncResultEvents events in wrapper.timeline.events)
                                 {
-                                    //unencrypted
-                                    if (events.content.format == "org.matrix.custom.html")
+
+                                    if (events.content.msgtype == "m.text")
                                     {
-                                        chat.processIncomingChatMessage(events.sender, events.content.formatted_body);
+                                        //unencrypted
+                                        if (events.content.format == "org.matrix.custom.html")
+                                        {
+                                            chat.processIncomingChatMessage(events.sender, events.content.formatted_body);
+
+                                        }
+                                        else
+                                        {
+                                            chat.processIncomingChatMessage(events.sender, events.content.body);
+                                        }
+                                    }
+
+                                    if (events.content.msgtype == "m.image")
+                                    {
+
+                                        MatrixMediaRequest matrixMediaRequest = new MatrixMediaRequest();
+                                        matrixMediaRequest.filename = events.content.body;
+                                        matrixMediaRequest.sender = events.sender;
+                                        matrixMediaRequest.roomID = chat.RoomID;
+
+
+                                        Businesslogic.Instance.downloadMedia(matrixMediaRequest, Businesslogic.MXC2HTTP(events.content.url));
 
                                     }
-                                    else
-                                    {
-                                        chat.processIncomingChatMessage(events.sender, events.content.body);
-                                    }
+                                    //chat.processIncomingChatMessage(events.content.ciphertext);
                                 }
-                                //chat.processIncomingChatMessage(events.content.ciphertext);
                             }
                         }
                     }

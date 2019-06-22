@@ -34,7 +34,7 @@ namespace yuck
         }
         private static readonly HttpClient client = new HttpClient();
         MatrixLoginResult matrixResult;
-        private string loggedInUserID;
+        internal string loggedInUserID;
 
         public delegate void membersLoadedEvent(MatrixMemberResult matrixMemberResult);
         public event membersLoadedEvent MembersLoaded;
@@ -155,13 +155,23 @@ namespace yuck
         }
 
 
-        public delegate void MediadownloadCompleted(Image image);
+        public delegate void MediadownloadCompleted(MatrixMediaRequest matrixMediaRequest, Image image);
         public event MediadownloadCompleted MediadownloadCompletedEvent;
-        private void fireMediadownloadCompletedEvent(Image image)
+        private void fireMediadownloadCompletedEvent(MatrixMediaRequest matrixMediaRequest, Image image)
         {
             if (MediadownloadCompletedEvent != null)
             {
-                MediadownloadCompletedEvent(image);
+                MediadownloadCompletedEvent(matrixMediaRequest, image);
+            }
+        }
+
+        public delegate void AvatarDownloadCompleted(Image image);
+        public event AvatarDownloadCompleted AvatarDownloadCompletedEvent;
+        private void fireAvatarDownloadCompletedEvent(Image image)
+        {
+            if (AvatarDownloadCompletedEvent != null)
+            {
+                AvatarDownloadCompletedEvent(image);
             }
         }
 
@@ -254,16 +264,10 @@ namespace yuck
             return null;
         }
 
-        public async Task downloadMediaAsync(Uri uri)
-        {
-            await downloadMediaAwait(uri);
-        }
-        internal async Task<Image> downloadMediaAwait(Uri uri)
+        internal async Task<Image> downloadMedia(MatrixMediaRequest matrixImageRequest,  Uri uri)
         {
             HttpClient client = new HttpClient();
-
             //string uri = String.Format("https://{0}/_matrix/media/r0/download/st0ne.net/wEmUPhSlPdqDNlBHxlBAHAVx", Properties.Settings.Default.matrixserver_hostname);
-            //client.BaseAddress = new Uri(uri);
             client.BaseAddress = uri;
             client.DefaultRequestHeaders
                   .Accept
@@ -277,25 +281,45 @@ namespace yuck
                 {
 
                     Stream s = response.Content.ReadAsStreamAsync().Result;
-
-                    //%%string responseString = response.Content.ReadAsStringAsync().Result;
-                   // MemoryStream s = new MemoryStream();
-
-                   // byte[] buffer = Encoding.ASCII.GetBytes(responseString.ToCharArray());
-                    ////s.Write(buffer, 0, buffer.Length);
-                    //s.Flush();
                     s.Seek(0, SeekOrigin.Begin);
-
                     Image i = Image.FromStream(s);
 
-                    fireMediadownloadCompletedEvent(i);
+                    fireMediadownloadCompletedEvent(matrixImageRequest, i);
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine("could not downloadMediaAwait(): " + e.Message);
             }
+            return null;
+        }
+        internal async Task<Image> downloadAvatar(Uri uri)
+        {
+            HttpClient client = new HttpClient();
+            //string uri = String.Format("https://{0}/_matrix/media/r0/download/st0ne.net/wEmUPhSlPdqDNlBHxlBAHAVx", Properties.Settings.Default.matrixserver_hostname);
+            client.BaseAddress = uri;
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync(client.BaseAddress);
+                Task<string> sss = response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+
+                    Stream s = response.Content.ReadAsStreamAsync().Result;
+                    s.Seek(0, SeekOrigin.Begin);
+                    Image i = Image.FromStream(s);
+
+                    fireAvatarDownloadCompletedEvent(i);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("could not downloadMediaAwait(): " + e.Message);
+            }
             return null;
         }
 
@@ -678,7 +702,7 @@ namespace yuck
 
                 Task<string> sss = response.Content.ReadAsStringAsync();
 
-                Console.WriteLine("response status code:" + response.StatusCode);
+                Console.WriteLine("sendMessageFileAwait() response status code:" + response.StatusCode);
 
                 if (response.IsSuccessStatusCode)
                 {

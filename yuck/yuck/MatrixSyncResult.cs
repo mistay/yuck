@@ -89,5 +89,6 @@ namespace yuck
         public string ciphertext { get; set; }
         public string session_id { get; set; }
         public string device_id { get; set; }
+        public string url { get; set; }
     }
 }

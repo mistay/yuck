@@ -22,6 +22,33 @@ namespace yuck
         internal MatrixRoom matrixRoom;
         public string RoomID { get { return matrixRoom.roomID; } set { matrixRoom.roomID = value; this.Text = "Yuck Chat Room " + matrixRoom.roomID; } }
 
+        private void Chat_Load(object sender, EventArgs e)
+        {
+            Businesslogic.Instance.MembersLoaded += membersLoadedCallback;
+            Businesslogic.Instance.loadMembers(RoomID);
+
+            // prevent "ding" sound when pressing enter on txtMessage, weired.
+            // https://stackoverflow.com/questions/6290967/stop-the-ding-when-pressing-enter
+            // AND: processes message after ENTER pressed on txtMessage
+            this.AcceptButton = btnSend;
+
+            Businesslogic.Instance.MatrixUploadCompletedEvent += MatrixUploadCompletedCallback; ;
+            //Businesslogic.Instance.MessageCompletedEvent += MessageCompletedCallback; ;
+
+            //Businesslogic.Instance.syncAsync(null);
+            Businesslogic.Instance.MediadownloadCompletedEvent += MediadownloadCompletedCallback;
+
+        }
+
+        private void MediadownloadCompletedCallback(MatrixMediaRequest matrixMediaRequest, Image image)
+        {
+            if (matrixMediaRequest.roomID == matrixRoom.roomID)
+            {
+                // this image is intended for this chat
+                processIncomingChatMessageImage(matrixMediaRequest.sender, matrixMediaRequest.filename, image);
+            }
+        }
+
         private void BtnSend_Click(object sender, EventArgs e)
         {
             processChatMessage();
@@ -51,13 +78,50 @@ namespace yuck
             Businesslogic.Instance.sendMessage(matrixRoom.roomID , message);
         }
 
+        public void InsertImage(Image image)
+        {
+            Bitmap myBitmap = new Bitmap(image);
+            // Copy the bitmap to the clipboard.
+            Clipboard.SetDataObject(myBitmap);
+            // Get the format for the object type.
+            DataFormats.Format myFormat = DataFormats.GetFormat(DataFormats.Bitmap);
+            // After verifying that the data can be pasted, paste
+            if (txtChatmessages.CanPaste(myFormat))
+            {
+                txtChatmessages.Paste(myFormat);
+            }
+            else
+            {
+                Console.WriteLine("inserting clipboard into rtb file format not supported");
+            }
+        }
+
+        public void processIncomingChatMessageImage(string sender, string filename, Image image)
+        {
+            string newline = (txtChatmessages.Text == "") ? "" : Environment.NewLine;
+            string message = sender + " :" + filename;
+            txtChatmessages.AppendText(newline + message);
+            InsertImage(image);
+
+            if (sender == Businesslogic.Instance.loggedInUserID) // e.g. "@armin:st0ne.net"
+            {
+                if (txtChatmessages.SelectionAlignment == HorizontalAlignment.Left)
+                    txtChatmessages.SelectionAlignment = HorizontalAlignment.Right;
+            }
+            else
+            {
+                if (txtChatmessages.SelectionAlignment == HorizontalAlignment.Right)
+                    txtChatmessages.SelectionAlignment = HorizontalAlignment.Left;
+            }
+        }
+
+
         public void processIncomingChatMessage(string sender, string message)
         {
             string newline = (txtChatmessages.Text == "") ? "" : Environment.NewLine;
-
             txtChatmessages.AppendText(newline + message);
 
-            if (sender =="@armin:st0ne.net")
+            if (sender == Businesslogic.Instance.loggedInUserID) // e.g. "@armin:st0ne.net"
             {
                 if (txtChatmessages.SelectionAlignment == HorizontalAlignment.Left)
                     txtChatmessages.SelectionAlignment = HorizontalAlignment.Right;
@@ -66,8 +130,6 @@ namespace yuck
                 if (txtChatmessages.SelectionAlignment == HorizontalAlignment.Right)
                     txtChatmessages.SelectionAlignment = HorizontalAlignment.Left;
             }
-
-
         }
 
         private void LstMembers_SelectedIndexChanged(object sender, EventArgs e)
@@ -75,21 +137,6 @@ namespace yuck
 
         }
 
-        private void Chat_Load(object sender, EventArgs e)
-        {
-            Businesslogic.Instance.MembersLoaded += membersLoadedCallback;
-            Businesslogic.Instance.loadMembers(RoomID);
-
-            // prevent "ding" sound when pressing enter on txtMessage, weired.
-            // https://stackoverflow.com/questions/6290967/stop-the-ding-when-pressing-enter
-            // AND: processes message after ENTER pressed on txtMessage
-            this.AcceptButton = btnSend;
-
-            Businesslogic.Instance.MatrixUploadCompletedEvent += MatrixUploadCompletedCallback; ;
-            //Businesslogic.Instance.MessageCompletedEvent += MessageCompletedCallback; ;
-
-            //Businesslogic.Instance.syncAsync(null);
-        }
 
         private void MatrixUploadCompletedCallback(MatrixUploadResult matrixUploadResult)
         {
