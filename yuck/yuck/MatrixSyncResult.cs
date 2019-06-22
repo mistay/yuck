@@ -20,17 +20,17 @@ namespace yuck
 
     public class SyncResultPresence
     {
-        public List<SyncResultEvents> events { get; set; }
+        public List<MatrixSyncResultPresenceEvents> events { get; set; }
     }
-    public class SyncResultEvents
+    public class MatrixSyncResultPresenceEvents
     {
         public string type { get; set; }
         public string sender { get; set; }
-        public SyncResultContent content { get; set; }
+        public SyncResultPresenceContent content { get; set; }
 
     }
 
-    public class SyncResultContent
+    public class SyncResultPresenceContent
     {
         public string presence { get; set; }
         public long last_active_ago { get; set; }

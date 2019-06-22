@@ -154,9 +154,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(3, 263);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(45, 17);
+            this.label2.Size = new System.Drawing.Size(82, 17);
             this.label2.TabIndex = 12;
-            this.label2.Text = "Users";
+            this.label2.Text = "User Status";
             // 
             // label1
             // 

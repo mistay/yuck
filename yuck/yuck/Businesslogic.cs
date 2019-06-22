@@ -118,13 +118,13 @@ namespace yuck
             }
         }
 
-        public delegate void UserPrecenseReceived(MatrixSyncResult matrixSyncResult);
+        public delegate void UserPrecenseReceived(Dictionary<string, string> changed);
         public event UserPrecenseReceived UserPrecenseReceivedEvent;
-        private void fireUserPrecenseReceivedEvent(MatrixSyncResult matrixSyncResult)
+        private void fireUserPrecenseReceivedEvent(Dictionary<string,string> changed)
         {
             if (UserPrecenseReceivedEvent != null)
             {
-                UserPrecenseReceivedEvent(matrixSyncResult);
+                UserPrecenseReceivedEvent(changed);
             }
         }
 
@@ -370,12 +370,16 @@ namespace yuck
             return null;
         }
 
+
+        public Dictionary<string, string> presence = new Dictionary<string, string>();
+
         public async Task syncAsync(string next_batch)
         {
             await syncAwait(next_batch);
         }
         internal async Task<MatrixSyncResult> syncAwait(string next_batch)
         {
+
             HttpClient client = new HttpClient();
             MatrixSyncResult matrixSyncResult = null;
 
@@ -398,6 +402,35 @@ namespace yuck
                     Console.WriteLine("syncAwait response from server:" + responseString);
 
                     matrixSyncResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixSyncResult>(responseString);
+
+                    if (matrixSyncResult.presence.events.Count > 0)
+                    {
+                        Dictionary<string, string> presenceChanged = new Dictionary<string, string>();
+                        foreach (MatrixSyncResultPresenceEvents @event in matrixSyncResult.presence.events)
+                        {
+                            if (@event.type == "m.presence")
+                            {
+                                bool add = false;
+                                if (presence.ContainsKey(@event.sender))
+                                {
+                                    if (presence[@event.sender] != @event.content.presence)
+                                        add = true;
+                                }
+                                else
+                                    add = true;
+
+                                if (add)
+                                {
+                                    presence[@event.sender] = @event.content.presence;
+                                    presenceChanged.Add(@event.sender, @event.content.presence);
+                                }
+                            }
+                        }
+                        if (presenceChanged.Count>0)
+                               fireUserPrecenseReceivedEvent(presenceChanged);
+                    }
+
+
 
                     foreach (KeyValuePair<string, MatrixSyncResultTimelineWrapper> wrapper in matrixSyncResult.rooms.join)
                     {
@@ -425,10 +458,10 @@ namespace yuck
 
                     }
 
-                    if (matrixSyncResult.presence.events != null)
+                    /*if (matrixSyncResult.presence.events != null)
                     {
-                        fireUserPrecenseReceivedEvent(matrixSyncResult);
-                    }
+                        fireUserPrecenseReceivedEvent(next_batch==null, matrixSyncResult);
+                    }*/
                 }
                 
 

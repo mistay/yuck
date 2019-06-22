@@ -29,7 +29,7 @@ namespace yuck
 
             Businesslogic.Instance.SyncCompletedEvent += SyncCompletedCallback;
 
-            Businesslogic.Instance.UserPrecenseReceivedEvent += UserPrecnseReceivedCallback;
+            Businesslogic.Instance.UserPrecenseReceivedEvent += UserPresenceReceivedCallback;
 
             Businesslogic.Instance.WhoamiEvent += WhoamiCallback;
 
@@ -97,12 +97,20 @@ namespace yuck
 
         }
 
-        private void UserPrecnseReceivedCallback(MatrixSyncResult matrixSyncResult)
+        private void UserPresenceReceivedCallback(Dictionary<string, string> changed)
         {
-            lstUsers.Items.Clear();
-            foreach (SyncResultEvents @event in matrixSyncResult.presence.events)
+            foreach (KeyValuePair<string, string> c in changed)
             {
-                lstUsers.Items.Add(@event.sender + ": " + @event.content.presence + " " + @event.content.currenty_active + " " + @event.content.last_active_ago);
+
+                Console.WriteLine("user came " + c.Value + ": " + c.Key);
+                notifyIcon1.ShowBalloonTip(1000, "user came " + c.Value, c.Key, ToolTipIcon.Info);
+
+            }
+
+            lstUsers.Items.Clear();
+            foreach (KeyValuePair<string, string> presence in Businesslogic.Instance.presence)
+            {
+                lstUsers.Items.Add(presence.Key + ": " + presence.Value);
             }
         }
 
@@ -145,7 +153,14 @@ namespace yuck
                 }
             }
 
-            Businesslogic.Instance.syncAsync(matrixSyncResult.next_batch);
+            if (matrixSyncResult == null)
+            {
+                Businesslogic.Instance.syncAsync(null);
+
+            } else {
+                Businesslogic.Instance.syncAsync(matrixSyncResult.next_batch);
+
+            }
         }
 
         public void LoginCompltedCallback()
