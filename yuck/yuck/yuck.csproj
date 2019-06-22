@@ -71,6 +71,7 @@
       <DependentUpon>Chat.cs</DependentUpon>
     </Compile>
     <Compile Include="MatrixAvatarResult.cs" />
+    <Compile Include="MatrixUploadResult.cs" />
     <Compile Include="MatrixRoom.cs" />
     <Compile Include="MatrixLoginResult.cs" />
     <Compile Include="Main.cs">

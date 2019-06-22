@@ -84,10 +84,15 @@ namespace yuck
             // AND: processes message after ENTER pressed on txtMessage
             this.AcceptButton = btnSend;
 
-            //Businesslogic.Instance.SyncCompletedEvent += SyncCompletedCallback;
+            Businesslogic.Instance.MatrixUploadCompletedEvent += MatrixUploadCompletedCallback; ;
             //Businesslogic.Instance.MessageCompletedEvent += MessageCompletedCallback; ;
 
             //Businesslogic.Instance.syncAsync(null);
+        }
+
+        private void MatrixUploadCompletedCallback(MatrixUploadResult matrixUploadResult)
+        {
+            Businesslogic.Instance.sendMessage(matrixRoom.roomID, matrixUploadResult.content_uri);
         }
 
         private void MessageCompletedCallback(MatrixMessagesResult matrixMessagesResult)
@@ -150,8 +155,6 @@ namespace yuck
             {
                 Console.WriteLine("file: " + file);
                 Businesslogic.Instance.sendMessageFile(matrixRoom.roomID, file);
-                MessageBox.Show("unimplemented: file has to be uploaded: " + file);
-
             }
         }
     }

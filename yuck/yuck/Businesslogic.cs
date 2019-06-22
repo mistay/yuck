@@ -98,6 +98,18 @@ namespace yuck
             }
         }
 
+
+        public delegate void MatrixUploadCompleted(MatrixUploadResult matrixUploadResult);
+        public event MatrixUploadCompleted MatrixUploadCompletedEvent;
+        private void fireMatrixUploadCompletedEvent(MatrixUploadResult matrixUploadResult)
+        {
+            if (MatrixUploadCompletedEvent != null)
+            {
+                MatrixUploadCompletedEvent(matrixUploadResult);
+            }
+        }
+
+
         public delegate void AvatarURLReceived(MatrixAvatarResult matrixAvatarResult);
         public event AvatarURLReceived AvatarURLReceivedEvent;
         private void fireAvatarURLReceivedEvent(MatrixAvatarResult matrixAvatarResult)
@@ -639,9 +651,64 @@ namespace yuck
 
 
 
-        public async Task sendMessageFile(string roomID, string message)
+        public async Task sendMessageFile(string roomID, string filename)
         {
-            //await sendMessageFileAwait(roomID, message);
+            await sendMessageFileAwait(roomID, filename);
+        }
+
+        internal async Task<MatrixLoginResult> sendMessageFileAwait(string roomID, string filename)
+        {
+            MatrixUploadResult matrixUploadResult = null;
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(String.Format("https://{0}/_matrix/media/r0/upload?filename=a.jpg&access_token={1}", Properties.Settings.Default.matrixserver_hostname, matrixResult.access_token));
+            /*client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                  */
+
+
+            //client.DefaultRequestHeaders.TryAddWithoutValidation("content-type", "image/jpeg");
+
+
+            //HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
+
+
+            FileStream s = new FileStream(filename, FileMode.Open);
+            StreamContent myStringContent = new StreamContent(s);
+
+            myStringContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+            try
+            {
+                //Console.WriteLine("calling: " + client.BaseAddress + " w/ content: " + myStringContent);
+                HttpResponseMessage response = await client.PostAsync(client.BaseAddress, myStringContent);
+
+                Task<string> sss = response.Content.ReadAsStringAsync();
+
+                Console.WriteLine("response status code:" + response.StatusCode);
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    string responseString = response.Content.ReadAsStringAsync().Result;
+                    Console.WriteLine("response from server:" + responseString);
+
+                    matrixUploadResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixUploadResult>(responseString);
+
+                    Console.WriteLine("matrixUploadResult content_uri:" + matrixUploadResult.content_uri);
+
+                    fireMatrixUploadCompletedEvent(matrixUploadResult);
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("could not Liveddatapush(): " + e.Message);
+            }
+
+
+
+
+            return null;
         }
 
         public async Task sendMessage(string roomID, string message)
