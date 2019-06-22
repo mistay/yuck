@@ -545,7 +545,7 @@ namespace yuck
         {
             MatrixLoginResult matrixLoginResult = null;
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(String.Format("https://matrix.st0ne.net/_matrix/client/r0/rooms/{0}/members?access_token={1}", roomID, matrixResult.access_token));
+            client.BaseAddress = new Uri(String.Format("https://{0}/_matrix/client/r0/rooms/{1}/members?access_token={2}", Properties.Settings.Default.matrixserver_hostname, roomID, matrixResult.access_token));
             client.DefaultRequestHeaders
                   .Accept
                   .Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -842,7 +842,7 @@ namespace yuck
         {
             MatrixLoginResult matrixLoginResult = null;
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(String.Format("https://matrix.st0ne.net/_matrix/client/r0/rooms/{0}/send/m.room.message?access_token={1}", roomID, matrixResult.access_token));
+            client.BaseAddress = new Uri(String.Format("https://{0}/_matrix/client/r0/rooms/{1}/send/m.room.message?access_token={2}", Properties.Settings.Default.matrixserver_hostname, roomID, matrixResult.access_token));
             client.DefaultRequestHeaders
                   .Accept
                   .Add(new MediaTypeWithQualityHeaderValue("application/json"));
