@@ -99,13 +99,28 @@ namespace yuck
 
         private void UserPresenceReceivedCallback(Dictionary<string, string> changed)
         {
-            foreach (KeyValuePair<string, string> c in changed)
+            if (presenceLoaded)
             {
+                foreach (KeyValuePair<string, string> c in changed)
+                {
+                    Console.WriteLine("user came " + c.Value + ": " + c.Key);
 
-                Console.WriteLine("user came " + c.Value + ": " + c.Key);
-                notifyIcon1.ShowBalloonTip(1000, "user came " + c.Value, c.Key, ToolTipIcon.Info);
+                    string message = "";
+                    switch (c.Value) {
+                        case "online":
+                            message = "user came online";
+                            break;
+                        case "offline":
+                            message = "user went offline";
+                            break;
+                        default:
+                            break;
+                    }
 
+                    notifyIcon1.ShowBalloonTip(1000, message, c.Key, ToolTipIcon.Info);
+                }
             }
+            presenceLoaded = true;
 
             lstUsers.Items.Clear();
             foreach (KeyValuePair<string, string> presence in Businesslogic.Instance.presence)
@@ -165,6 +180,7 @@ namespace yuck
 
         public void LoginCompltedCallback()
         {
+            presenceLoaded = false;
             tsstatus.Text = "Login Completed";
             Businesslogic.Instance.whoamiAsync();
             Businesslogic.Instance.loadRooms();
@@ -245,6 +261,9 @@ namespace yuck
 
 
         MatrixLoginResult matrixResult;
+        private DateTime dateTimeLoginCompleted;
+        private bool presenceLoaded;
+
         private void Button1_Click(object sender, EventArgs e)
         {
             Businesslogic.Instance.login();
