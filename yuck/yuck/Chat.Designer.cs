@@ -52,7 +52,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(800, 450);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1018, 587);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // tableLayoutPanel3
@@ -67,7 +67,7 @@
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 1;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(794, 404);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(1012, 541);
             this.tableLayoutPanel3.TabIndex = 1;
             // 
             // lstMembers
@@ -75,9 +75,9 @@
             this.lstMembers.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lstMembers.FormattingEnabled = true;
             this.lstMembers.ItemHeight = 16;
-            this.lstMembers.Location = new System.Drawing.Point(558, 3);
+            this.lstMembers.Location = new System.Drawing.Point(711, 3);
             this.lstMembers.Name = "lstMembers";
-            this.lstMembers.Size = new System.Drawing.Size(233, 398);
+            this.lstMembers.Size = new System.Drawing.Size(298, 535);
             this.lstMembers.TabIndex = 2;
             this.lstMembers.SelectedIndexChanged += new System.EventHandler(this.LstMembers_SelectedIndexChanged);
             // 
@@ -86,7 +86,7 @@
             this.txtChatmessages.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtChatmessages.Location = new System.Drawing.Point(3, 3);
             this.txtChatmessages.Name = "txtChatmessages";
-            this.txtChatmessages.Size = new System.Drawing.Size(549, 398);
+            this.txtChatmessages.Size = new System.Drawing.Size(702, 535);
             this.txtChatmessages.TabIndex = 3;
             this.txtChatmessages.Text = "";
             this.txtChatmessages.TextChanged += new System.EventHandler(this.TxtChatmessages_TextChanged_1);
@@ -99,11 +99,11 @@
             this.tableLayoutPanel2.Controls.Add(this.txtMessage, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.btnSend, 1, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 413);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 550);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(794, 34);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1012, 34);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // txtMessage
@@ -111,7 +111,7 @@
             this.txtMessage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtMessage.Location = new System.Drawing.Point(3, 3);
             this.txtMessage.Name = "txtMessage";
-            this.txtMessage.Size = new System.Drawing.Size(629, 22);
+            this.txtMessage.Size = new System.Drawing.Size(803, 22);
             this.txtMessage.TabIndex = 1;
             this.txtMessage.TextChanged += new System.EventHandler(this.TxtMessage_TextChanged);
             this.txtMessage.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TxtMessage_KeyUp);
@@ -119,9 +119,9 @@
             // btnSend
             // 
             this.btnSend.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnSend.Location = new System.Drawing.Point(638, 3);
+            this.btnSend.Location = new System.Drawing.Point(812, 3);
             this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(153, 28);
+            this.btnSend.Size = new System.Drawing.Size(197, 28);
             this.btnSend.TabIndex = 2;
             this.btnSend.Text = "&Send";
             this.btnSend.UseVisualStyleBackColor = true;
@@ -129,13 +129,16 @@
             // 
             // Chat
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1018, 587);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "Chat";
             this.Text = "YuckRoomChat";
             this.Load += new System.EventHandler(this.Chat_Load);
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Chat_DragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Chat_DragEnter);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);

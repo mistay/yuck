@@ -135,5 +135,24 @@ namespace yuck
         {
 
         }
+
+        private void Chat_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Copy;
+            Console.WriteLine("dragged");
+        }
+
+        private void Chat_DragDrop(object sender, DragEventArgs e)
+        {
+            Console.WriteLine("dropped");
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            foreach (string file in files)
+            {
+                Console.WriteLine("file: " + file);
+                Businesslogic.Instance.sendMessageFile(matrixRoom.roomID, file);
+                MessageBox.Show("unimplemented: file has to be uploaded: " + file);
+
+            }
+        }
     }
 }

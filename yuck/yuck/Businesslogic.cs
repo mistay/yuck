@@ -639,6 +639,11 @@ namespace yuck
 
 
 
+        public async Task sendMessageFile(string roomID, string message)
+        {
+            //await sendMessageFileAwait(roomID, message);
+        }
+
         public async Task sendMessage(string roomID, string message)
         {
             await sendMessageAwait(roomID, message);
