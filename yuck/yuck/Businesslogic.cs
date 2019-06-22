@@ -660,23 +660,17 @@ namespace yuck
         {
             MatrixUploadResult matrixUploadResult = null;
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(String.Format("https://{0}/_matrix/media/r0/upload?filename=a.jpg&access_token={1}", Properties.Settings.Default.matrixserver_hostname, matrixResult.access_token));
-            /*client.DefaultRequestHeaders
-                  .Accept
-                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                  */
 
+            string fileNameLeaf = Path.GetFileName(filename);
 
-            //client.DefaultRequestHeaders.TryAddWithoutValidation("content-type", "image/jpeg");
-
-
-            //HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
-
+            client.BaseAddress = new Uri(String.Format("https://{0}/_matrix/media/r0/upload?filename={1}&access_token={2}", Properties.Settings.Default.matrixserver_hostname, fileNameLeaf, matrixResult.access_token));
 
             FileStream s = new FileStream(filename, FileMode.Open);
             StreamContent myStringContent = new StreamContent(s);
 
-            myStringContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+            string mimeType = MimeMapping.GetMimeMapping(filename);
+
+            myStringContent.Headers.ContentType = MediaTypeHeaderValue.Parse(mimeType);
             try
             {
                 //Console.WriteLine("calling: " + client.BaseAddress + " w/ content: " + myStringContent);
@@ -694,6 +688,8 @@ namespace yuck
 
                     matrixUploadResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixUploadResult>(responseString);
 
+                    matrixUploadResult.original_source_filename = filename;
+
                     Console.WriteLine("matrixUploadResult content_uri:" + matrixUploadResult.content_uri);
 
                     fireMatrixUploadCompletedEvent(matrixUploadResult);
@@ -709,6 +705,132 @@ namespace yuck
 
 
             return null;
+        }
+
+
+        public async Task sendMessageFile(string roomID, string filename, string original_source_filename)
+        {
+            await sendMessageFileAwait(roomID, filename, original_source_filename);
+        }
+
+        internal async Task<MatrixLoginResult> sendMessageFileAwait(string roomID, string mxc_uri, string original_source_filename)
+        {
+            MatrixLoginResult matrixLoginResult = null;
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(String.Format("https://{0}/_matrix/client/r0/rooms/{1}/send/m.room.message?access_token={2}", Properties.Settings.Default.matrixserver_hostname, roomID, matrixResult.access_token));
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
+
+            String template = @"
+                  ""msgtype"": ""m.file"",
+                  ""body"": ""{0}"",
+                  ""filename"": ""{1}"",
+                  ""url"": ""{2}""
+                ";
+            String jsonLogin = String.Format(template, Path.GetFileName(original_source_filename), Path.GetFileName(original_source_filename), mxc_uri);
+            jsonLogin = "{" + jsonLogin + "}";
+
+
+            StringContent myStringContent = new StringContent(jsonLogin);
+            try
+            {
+                Console.WriteLine("calling: " + client.BaseAddress + " w/ content: " + myStringContent);
+                HttpResponseMessage response = await client.PostAsync(client.BaseAddress, myStringContent);
+
+                Task<string> sss = response.Content.ReadAsStringAsync();
+
+                Console.WriteLine("response status code:" + response.StatusCode);
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    string responseString = response.Content.ReadAsStringAsync().Result;
+                    Console.WriteLine("response from server:" + responseString);
+
+                    matrixLoginResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixLoginResult>(responseString);
+
+
+                    Console.WriteLine("livedataResult user_id:" + matrixLoginResult.user_id);
+
+
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("could not Liveddatapush(): " + e.Message);
+            }
+
+
+
+
+            return matrixLoginResult;
+        }
+
+        public async Task sendMessageImage(string roomID, string filename, string original_source_filename)
+        {
+            await sendMessageImageAwait(roomID, filename, original_source_filename);
+        }
+
+        internal async Task<MatrixLoginResult> sendMessageImageAwait(string roomID, string mxc_uri, string original_source_filename)
+        {
+            MatrixLoginResult matrixLoginResult = null;
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(String.Format("https://{0}/_matrix/client/r0/rooms/{1}/send/m.room.message?access_token={2}", Properties.Settings.Default.matrixserver_hostname, roomID, matrixResult.access_token));
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
+
+            String template = @"
+                  ""msgtype"": ""m.image"",
+                  ""body"": ""{0}"",
+                  ""url"": ""{1}""
+                ";
+            String jsonLogin = String.Format(template, Path.GetFileName(original_source_filename), mxc_uri);
+            jsonLogin = "{" + jsonLogin + "}";
+
+
+            StringContent myStringContent = new StringContent(jsonLogin);
+            try
+            {
+                Console.WriteLine("calling: " + client.BaseAddress + " w/ content: " + myStringContent);
+                HttpResponseMessage response = await client.PostAsync(client.BaseAddress, myStringContent);
+
+                Task<string> sss = response.Content.ReadAsStringAsync();
+
+                Console.WriteLine("response status code:" + response.StatusCode);
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    string responseString = response.Content.ReadAsStringAsync().Result;
+                    Console.WriteLine("response from server:" + responseString);
+
+                    matrixLoginResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixLoginResult>(responseString);
+
+
+                    Console.WriteLine("livedataResult user_id:" + matrixLoginResult.user_id);
+
+
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("could not Liveddatapush(): " + e.Message);
+            }
+
+
+
+
+            return matrixLoginResult;
         }
 
         public async Task sendMessage(string roomID, string message)

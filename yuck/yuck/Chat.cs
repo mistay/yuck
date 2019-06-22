@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows.Forms;
 
 namespace yuck
@@ -92,7 +93,13 @@ namespace yuck
 
         private void MatrixUploadCompletedCallback(MatrixUploadResult matrixUploadResult)
         {
-            Businesslogic.Instance.sendMessage(matrixRoom.roomID, matrixUploadResult.content_uri);
+
+            string mimeType = MimeMapping.GetMimeMapping(matrixUploadResult.original_source_filename);
+            if (mimeType.ToLower() == "image/jpeg" || mimeType.ToLower() == "image/png" || mimeType.ToLower() == "image/jpg" || mimeType.ToLower() == "image/png")
+                Businesslogic.Instance.sendMessageImage(matrixRoom.roomID, matrixUploadResult.content_uri, matrixUploadResult.original_source_filename);
+            else
+                Businesslogic.Instance.sendMessageFile(matrixRoom.roomID, matrixUploadResult.content_uri, matrixUploadResult.original_source_filename);
+
         }
 
         private void MessageCompletedCallback(MatrixMessagesResult matrixMessagesResult)
