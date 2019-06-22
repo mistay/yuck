@@ -326,9 +326,7 @@ namespace yuck
 
         private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            Show();
-            this.WindowState = FormWindowState.Normal;
-            notifyIcon1.Visible = false;
+            
         }
 
         private void SettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -356,6 +354,25 @@ namespace yuck
         private void TableLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void Main_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // minimize to system tray
+            e.Cancel = true;
+            Hide();
+        }
+
+        private void NotifyIcon1_Click(object sender, EventArgs e)
+        {
+            if (this.Visible)
+                this.Hide();
+            else
+            {
+                Show();
+                this.WindowState = FormWindowState.Normal;
+            }
+            //notifyIcon1.Visible = false;
         }
     }
 }
