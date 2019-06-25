@@ -161,7 +161,7 @@ namespace yuck
                                 }
                                 else
                                 {
-                                    notifyIcon1.ShowBalloonTip(3000, String.Format("{0}", matrixUsernameToShortUsername(events.sender)), events.content.body, ToolTipIcon.Info);
+                                    notifyIcon1.ShowBalloonTip(calcTimeoutFromWords(events.content.body), String.Format("{0}", matrixUsernameToShortUsername(events.sender)), events.content.body, ToolTipIcon.Info);
                                 }
                             }
 
@@ -226,6 +226,20 @@ namespace yuck
             }
 
             Businesslogic.Instance.sync();
+        }
+
+        private int calcTimeoutFromWords(string message)
+        {
+            // https://de.wikipedia.org/wiki/Lesegeschwindigkeit
+            int words_per_minute = 150;
+            string[] words = message.Split(' ');
+            int numWords = words.Length;
+
+            int timeout = (int)(((float)numWords / (float)words_per_minute) * 60 * 1000);
+
+            if (timeout > 30000) timeout = 30000;
+
+            return timeout;
         }
 
         public void LoginCompltedCallback()
