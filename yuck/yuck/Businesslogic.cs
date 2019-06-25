@@ -120,13 +120,13 @@ namespace yuck
             }
         }
 
-        public delegate void SyncCompleted(MatrixSyncResult matrixSyncResult);
+        public delegate void SyncCompleted(MatrixSyncResult matrixSyncResult, bool initSync);
         public event SyncCompleted SyncCompletedEvent;
-        private void fireSyncCompletedEvent(MatrixSyncResult matrixSyncResult)
+        private void fireSyncCompletedEvent(MatrixSyncResult matrixSyncResult, bool initSync)
         {
             if (SyncCompletedEvent != null)
             {
-                SyncCompletedEvent(matrixSyncResult);
+                SyncCompletedEvent(matrixSyncResult, initSync);
             }
         }
 
@@ -400,7 +400,7 @@ namespace yuck
             }
             catch (Exception e)
             {
-                Console.WriteLine("could not syncAwait(): " + e.Message);
+                Console.WriteLine("could not messagesAwait(): " + e.Message);
             }
 
             return null;
@@ -409,17 +409,17 @@ namespace yuck
 
         public Dictionary<string, string> presence = new Dictionary<string, string>();
 
-        public async Task syncAsync(string next_batch)
+        private string _next_batch = null;
+
+        public async Task<MatrixSyncResult> sync()
         {
-            await syncAwait(next_batch);
-        }
-        internal async Task<MatrixSyncResult> syncAwait(string next_batch)
-        {
+
+            bool initSync = _next_batch == null;
 
             HttpClient client = new HttpClient();
             MatrixSyncResult matrixSyncResult = null;
 
-            string uri = String.Format("https://{0}/_matrix/client/r0/sync?timeout=120000&access_token={1}{2}", Properties.Settings.Default.matrixserver_hostname, matrixResult.access_token, next_batch == null ? "" : "&since=" + next_batch);
+            string uri = String.Format("https://{0}/_matrix/client/r0/sync?timeout=120000&access_token={1}{2}", Properties.Settings.Default.matrixserver_hostname, matrixResult.access_token, _next_batch == null ? "" : "&since=" + _next_batch);
             Console.WriteLine("uri:" + uri);
 
             client.BaseAddress = new Uri(uri);
@@ -435,9 +435,10 @@ namespace yuck
                 if (response.IsSuccessStatusCode)
                 {
                     string responseString = response.Content.ReadAsStringAsync().Result;
-                    Console.WriteLine("syncAwait response from server:" + responseString);
+                    Console.WriteLine("/sync response from server:" + responseString);
 
                     matrixSyncResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixSyncResult>(responseString);
+                    _next_batch = matrixSyncResult.next_batch;
 
                     if (matrixSyncResult.presence.events.Count > 0)
                     {
@@ -472,18 +473,20 @@ namespace yuck
                     {
                         foreach (MatrixSyncResultEphemeralEvents @event in wrapper.Value.ephemeral.events)
                         {
-                            fireTypingEvent(@event.content.user_ids);
-
-                            if (@event.content.user_ids.Count == 0)
+                            if (@event.content.user_ids != null)
                             {
-                                Console.WriteLine("noone is typing...");
-                            }
-                            else
-                            {
+                                fireTypingEvent(@event.content.user_ids);
 
-                                foreach (string user_id in @event.content.user_ids)
+                                if (@event.content.user_ids.Count == 0)
                                 {
-                                    Console.WriteLine("user: " + user_id + "is typing ...");
+                                    Console.WriteLine("noone is typing...");
+                                }
+                                else
+                                {
+                                    foreach (string user_id in @event.content.user_ids)
+                                    {
+                                        Console.WriteLine("user: " + user_id + "is typing ...");
+                                    }
                                 }
                             }
                         }
@@ -493,34 +496,19 @@ namespace yuck
                     {
 
                     }
-
-                    /*if (matrixSyncResult.presence.events != null)
-                    {
-                        fireUserPrecenseReceivedEvent(next_batch==null, matrixSyncResult);
-                    }*/
                 }
-                
-
             }
             catch (Exception e)
             {
-                Console.WriteLine("could not syncAwait(): " + e.Message);
+                Console.WriteLine("could not /sync(): " + e.Message);
             }
 
-            fireSyncCompletedEvent(matrixSyncResult);
+            fireSyncCompletedEvent(matrixSyncResult, initSync);
 
             return null;
         }
 
-        public void loadRooms()
-        {
-            loadRoomsAsync();
-        }
-        public async Task loadRoomsAsync()
-        {
-            await loadRoomsAwait();
-        }
-        internal async Task<MatrixLoginResult> loadRoomsAwait()
+        internal async Task<MatrixLoginResult> loadRooms()
         {
             MatrixLoginResult matrixLoginResult = null;
             HttpClient client = new HttpClient();
@@ -529,12 +517,11 @@ namespace yuck
             client.DefaultRequestHeaders
                   .Accept
                   .Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
             try
             {
                 HttpResponseMessage response = await client.GetAsync(client.BaseAddress);
                 Task<string> sss = response.Content.ReadAsStringAsync();
-                Console.WriteLine("response status code:" + response.StatusCode);
+                Console.WriteLine("loadRooms() response status code:" + response.StatusCode);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -544,17 +531,13 @@ namespace yuck
                     MatrixJoinedRoomsResult matrixJoinedRoomsResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixJoinedRoomsResult>(responseString);
 
                     fireJoinedRoomyLoadedEvent(matrixJoinedRoomsResult);
-
-
                 }
-
             }
             catch (Exception e)
             {
-                Console.WriteLine("could not Liveddatapush(): " + e.Message);
+                Console.WriteLine("could not loadRooms(): " + e.Message);
             }
-
-            return matrixLoginResult;
+            return null;
         }
 
         public void loadMembers(string roomID)
@@ -857,12 +840,7 @@ namespace yuck
             return matrixLoginResult;
         }
 
-        public async Task sendMessage(string roomID, string message)
-        {
-            await sendMessageAwait(roomID, message);
-        }
-
-        internal async Task<MatrixLoginResult> sendMessageAwait(string roomID, string message)
+        internal async Task<MatrixLoginResult> sendMessage(string roomID, string message)
         {
             MatrixLoginResult matrixLoginResult = null;
             HttpClient client = new HttpClient();
@@ -887,22 +865,22 @@ namespace yuck
             StringContent myStringContent = new StringContent(jsonLogin);
             try
             {
-                Console.WriteLine("calling: " + client.BaseAddress + " w/ content: " + myStringContent);
+                Console.WriteLine("sendMessage() calling: " + client.BaseAddress + " w/ content: " + myStringContent);
                 HttpResponseMessage response = await client.PostAsync(client.BaseAddress, myStringContent);
 
                 Task<string> sss = response.Content.ReadAsStringAsync();
 
-                Console.WriteLine("response status code:" + response.StatusCode);
+                Console.WriteLine("sendMessage() response status code:" + response.StatusCode);
 
                 if (response.IsSuccessStatusCode)
                 {
 
                     string responseString = response.Content.ReadAsStringAsync().Result;
-                    Console.WriteLine("response from server:" + responseString);
+                    Console.WriteLine("sendMessage() response from server:" + responseString);
 
-                    matrixLoginResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixLoginResult>(responseString);
+                    //matrixLoginResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixLoginResult>(responseString);
 
-                    Console.WriteLine("livedataResult user_id:" + matrixLoginResult.user_id);
+                    //Console.WriteLine("livedataResult user_id:" + matrixLoginResult.user_id);
 
                     
                 }
@@ -910,13 +888,10 @@ namespace yuck
             }
             catch (Exception e)
             {
-                Console.WriteLine("could not Liveddatapush(): " + e.Message);
+                Console.WriteLine("could not sendMessage(): " + e.Message);
             }
 
-
-            
-
-            return matrixLoginResult;
+            return null;
         }
 
 

@@ -19,13 +19,14 @@ namespace yuck
             InitializeComponent();
         }
 
-        internal MatrixRoom matrixRoom;
-        public string RoomID { get { return matrixRoom.roomID; } set { matrixRoom.roomID = value; this.Text = "Yuck Chat Room " + matrixRoom.roomID; } }
+
+        private MatrixRoom _matrixroom;
+        internal MatrixRoom MatrixRoom { get { return _matrixroom; } set { _matrixroom = value; this.Text = "Yuck Chat Room " + _matrixroom.roomID; } }
 
         private void Chat_Load(object sender, EventArgs e)
         {
             Businesslogic.Instance.MembersLoaded += membersLoadedCallback;
-            Businesslogic.Instance.loadMembers(RoomID);
+            Businesslogic.Instance.loadMembers( MatrixRoom.roomID);
 
             // prevent "ding" sound when pressing enter on txtMessage, weired.
             // https://stackoverflow.com/questions/6290967/stop-the-ding-when-pressing-enter
@@ -42,7 +43,7 @@ namespace yuck
 
         private void MediadownloadCompletedCallback(MatrixMediaRequest matrixMediaRequest, Image image)
         {
-            if (matrixMediaRequest.roomID == matrixRoom.roomID)
+            if (matrixMediaRequest.roomID == MatrixRoom.roomID)
             {
                 // this image is intended for this chat
                 processIncomingChatMessageImage(matrixMediaRequest.sender, matrixMediaRequest.filename, image);
@@ -75,61 +76,18 @@ namespace yuck
                 txtChatmessages.SelectionAlignment = HorizontalAlignment.Right;
             txtChatmessages.AppendText(newline + message);
             */
-            Businesslogic.Instance.sendMessage(matrixRoom.roomID , message);
-        }
-
-        public void InsertImage(Image image)
-        {
-            Bitmap myBitmap = new Bitmap(image);
-            // Copy the bitmap to the clipboard.
-            Clipboard.SetDataObject(myBitmap);
-            // Get the format for the object type.
-            DataFormats.Format myFormat = DataFormats.GetFormat(DataFormats.Bitmap);
-            // After verifying that the data can be pasted, paste
-            if (txtChatmessages.CanPaste(myFormat))
-            {
-                txtChatmessages.Paste(myFormat);
-            }
-            else
-            {
-                Console.WriteLine("inserting clipboard into rtb file format not supported");
-            }
+            Businesslogic.Instance.sendMessage(MatrixRoom.roomID, message);
         }
 
         public void processIncomingChatMessageImage(string sender, string filename, Image image)
         {
-            string newline = (txtChatmessages.Text == "") ? "" : Environment.NewLine;
-            string message = sender + " :" + filename;
-            txtChatmessages.AppendText(newline + message);
-            InsertImage(image);
-
-            if (sender == Businesslogic.Instance.loggedInUserID) // e.g. "@armin:st0ne.net"
-            {
-                if (txtChatmessages.SelectionAlignment == HorizontalAlignment.Left)
-                    txtChatmessages.SelectionAlignment = HorizontalAlignment.Right;
-            }
-            else
-            {
-                if (txtChatmessages.SelectionAlignment == HorizontalAlignment.Right)
-                    txtChatmessages.SelectionAlignment = HorizontalAlignment.Left;
-            }
+            yuckChatControl1.AddImage(sender == Businesslogic.Instance.loggedInUserID, image, filename);
         }
 
 
         public void processIncomingChatMessage(string sender, string message)
         {
-            string newline = (txtChatmessages.Text == "") ? "" : Environment.NewLine;
-            txtChatmessages.AppendText(newline + message);
-
-            if (sender == Businesslogic.Instance.loggedInUserID) // e.g. "@armin:st0ne.net"
-            {
-                if (txtChatmessages.SelectionAlignment == HorizontalAlignment.Left)
-                    txtChatmessages.SelectionAlignment = HorizontalAlignment.Right;
-            } else
-            {
-                if (txtChatmessages.SelectionAlignment == HorizontalAlignment.Right)
-                    txtChatmessages.SelectionAlignment = HorizontalAlignment.Left;
-            }
+            yuckChatControl1.AddMessage(sender == Businesslogic.Instance.loggedInUserID, message);
         }
 
         private void LstMembers_SelectedIndexChanged(object sender, EventArgs e)
@@ -143,28 +101,26 @@ namespace yuck
 
             string mimeType = MimeMapping.GetMimeMapping(matrixUploadResult.original_source_filename);
             if (mimeType.ToLower() == "image/jpeg" || mimeType.ToLower() == "image/png" || mimeType.ToLower() == "image/jpg" || mimeType.ToLower() == "image/png")
-                Businesslogic.Instance.sendMessageImage(matrixRoom.roomID, matrixUploadResult.content_uri, matrixUploadResult.original_source_filename);
+                Businesslogic.Instance.sendMessageImage(MatrixRoom.roomID, matrixUploadResult.content_uri, matrixUploadResult.original_source_filename);
             else
-                Businesslogic.Instance.sendMessageFile(matrixRoom.roomID, matrixUploadResult.content_uri, matrixUploadResult.original_source_filename);
+                Businesslogic.Instance.sendMessageFile(MatrixRoom.roomID, matrixUploadResult.content_uri, matrixUploadResult.original_source_filename);
 
         }
 
         private void MessageCompletedCallback(MatrixMessagesResult matrixMessagesResult)
         {
             //Thread.Sleep(10000);
-            Businesslogic.Instance.messagesAsync( matrixRoom.roomID  , matrixMessagesResult.end);
+            Businesslogic.Instance.messagesAsync(MatrixRoom.roomID, matrixMessagesResult.end);
 
             foreach (MatrixMessagesChunkResult matrixMessagesChunkResult in matrixMessagesResult.chunk)
             {
                 try
                 {
-                    txtChatmessages.AppendText(matrixMessagesChunkResult.user_id + " eventid:" + matrixMessagesChunkResult.event_id + " " + matrixMessagesChunkResult.content.algorithm + " " + matrixMessagesChunkResult.content.ciphertext +  Environment.NewLine);
-                    txtChatmessages.SelectionAlignment = HorizontalAlignment.Left;
-
+                    yuckChatControl1.AddMessage(true, matrixMessagesChunkResult.user_id + " eventid:" + matrixMessagesChunkResult.event_id + " " + matrixMessagesChunkResult.content.algorithm + " " + matrixMessagesChunkResult.content.ciphertext);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("could not add text: " + e.Message);
+                    Console.WriteLine("could not AddMessage(): " + e.Message);
                 }
             }
         }
@@ -172,7 +128,7 @@ namespace yuck
         private void SyncCompletedCallback(MatrixSyncResult matrixSyncResult)
         {
             //Thread.Sleep(3000);
-            Businesslogic.Instance.messagesAsync(matrixRoom.roomID, matrixSyncResult.next_batch);
+            Businesslogic.Instance.messagesAsync(MatrixRoom.roomID, matrixSyncResult.next_batch);
         }
 
         private void membersLoadedCallback(MatrixMemberResult matrixMemberResult)
@@ -208,8 +164,18 @@ namespace yuck
             foreach (string file in files)
             {
                 Console.WriteLine("file: " + file);
-                Businesslogic.Instance.sendMessageFile(matrixRoom.roomID, file);
+                Businesslogic.Instance.sendMessageFile(MatrixRoom.roomID, file);
             }
+        }
+
+        private void TxtMessage_DoubleClick(object sender, EventArgs e)
+        {
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            yuckChatControl1.AddMessage(true, "foo\r\n\aaa");
+            yuckChatControl1.AddMessage(false, "foo\r\n\aaa");
         }
     }
 }

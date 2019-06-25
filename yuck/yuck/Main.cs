@@ -129,9 +129,49 @@ namespace yuck
             }
         }
 
-        private void SyncCompletedCallback(MatrixSyncResult matrixSyncResult)
+        public static string matrixUsernameToShortUsername(string username)
+        {
+            string[] tmp = username.Split(':');
+            if (tmp.Length == 2)
+                if (tmp[0].Length >= 1)
+                    return tmp[0].Substring(1);
+                else
+                    return username;
+            else
+                return username;
+        }
+
+        private void SyncCompletedCallback(MatrixSyncResult matrixSyncResult, bool initSync)
         {
             if (matrixSyncResult != null) {
+                if (!initSync)
+                {
+                    foreach (KeyValuePair<string, MatrixSyncResultTimelineWrapper> messagesForRoomID in matrixSyncResult.rooms.join)
+                    {
+                        Console.WriteLine("syncCompletedCallback()");
+
+                        MatrixSyncResultTimelineWrapper wrapper = messagesForRoomID.Value;
+                        foreach (MatrixSyncResultEvents events in wrapper.timeline.events)
+                        {
+
+                            if (events.content.msgtype == "m.text")
+                            {
+                                if (events.content.format == "org.matrix.custom.html")
+                                {
+                                }
+                                else
+                                {
+                                    notifyIcon1.ShowBalloonTip(3000, String.Format("{0}", matrixUsernameToShortUsername(events.sender)), events.content.body, ToolTipIcon.Info);
+                                }
+                            }
+
+                            if (events.content.msgtype == "m.image")
+                            {
+                                notifyIcon1.ShowBalloonTip(3000, String.Format("{0}", matrixUsernameToShortUsername(events.sender)), "image", ToolTipIcon.Info);
+                            }
+                        }
+                    }
+                }
 
 
                 foreach (Form form in Application.OpenForms)
@@ -139,14 +179,14 @@ namespace yuck
                     if (form is Chat)
                     {
                         Chat chat = (Chat)form;
-                        Console.WriteLine(chat.RoomID);
+                        Console.WriteLine(chat.MatrixRoom.roomID);
 
 
                         foreach (KeyValuePair<string, MatrixSyncResultTimelineWrapper> messagesForRoomID in matrixSyncResult.rooms.join)
                         {
-                            if (chat.RoomID == messagesForRoomID.Key)
+                            if (chat.MatrixRoom.roomID == messagesForRoomID.Key)
                             {
-                                Console.WriteLine("found message for room:" + chat.RoomID);
+                                Console.WriteLine("found message for room:" + chat.MatrixRoom.roomID);
 
                                 MatrixSyncResultTimelineWrapper wrapper = messagesForRoomID.Value;
                                 foreach (MatrixSyncResultEvents events in wrapper.timeline.events)
@@ -158,7 +198,6 @@ namespace yuck
                                         if (events.content.format == "org.matrix.custom.html")
                                         {
                                             chat.processIncomingChatMessage(events.sender, events.content.formatted_body);
-
                                         }
                                         else
                                         {
@@ -172,7 +211,7 @@ namespace yuck
                                         MatrixMediaRequest matrixMediaRequest = new MatrixMediaRequest();
                                         matrixMediaRequest.filename = events.content.body;
                                         matrixMediaRequest.sender = events.sender;
-                                        matrixMediaRequest.roomID = chat.RoomID;
+                                        matrixMediaRequest.roomID = chat.MatrixRoom.roomID;
 
 
                                         Businesslogic.Instance.downloadMedia(matrixMediaRequest, Businesslogic.MXC2HTTP(events.content.url));
@@ -186,14 +225,7 @@ namespace yuck
                 }
             }
 
-            if (matrixSyncResult == null)
-            {
-                Businesslogic.Instance.syncAsync(null);
-
-            } else {
-                Businesslogic.Instance.syncAsync(matrixSyncResult.next_batch);
-
-            }
+            Businesslogic.Instance.sync();
         }
 
         public void LoginCompltedCallback()
@@ -202,8 +234,7 @@ namespace yuck
             tsstatus.Text = "Login Completed";
             Businesslogic.Instance.whoamiAsync();
             Businesslogic.Instance.loadRooms();
-
-            Businesslogic.Instance.syncAsync(null);
+            Businesslogic.Instance.sync();
         }
 
         private void RoomResolvedCallback()
@@ -308,7 +339,7 @@ namespace yuck
         private void openChatWindow(MatrixRoom matrixRoom)
         {
             Chat chat = new Chat();
-            chat.matrixRoom = matrixRoom;
+            chat.MatrixRoom = matrixRoom;
             chat.Show();
         }
 
