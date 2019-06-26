@@ -29,12 +29,8 @@ namespace YuckChatWindow
             Console.WriteLine("new y: " + Y);
             TextBox l = new TextBox();
             l.Multiline = true;
-
-            //l.Width = this.Width - 50; // max. breite bissi kleiner als window-breite
             l.Text = message;
-
-            TextFormatFlags flags = TextFormatFlags.WordBreak;
-            Size size = TextRenderer.MeasureText(l.Text, l.Font, new Size(this.Width - 100, 100000000), flags);
+            Size size = TextRenderer.MeasureText(l.Text, l.Font, new Size(this.Width - 100, 100000000), TextFormatFlags.WordBreak | TextFormatFlags.TextBoxControl);
             int x = !ownMessage ? 0 : this.Width - size.Width - 30;
             l.Location = new Point(x,Y - this.VerticalScroll.Value);
             l.Size = size;
@@ -44,7 +40,6 @@ namespace YuckChatWindow
             l.BorderStyle = BorderStyle.None;
 
             l.BackColor = ownMessage ? Color.FromArgb(0x03, 0x7C, 0xFF) : Color.LightGray;
-            l.Multiline = true;
             this.Controls.Add(l);
         }
 
@@ -66,8 +61,8 @@ namespace YuckChatWindow
             Y += 100;
             TextBox l = new TextBox();
             l.Text = message;
-            Size size = TextRenderer.MeasureText(l.Text, l.Font);
-
+            l.Multiline = true;
+            Size size = TextRenderer.MeasureText(l.Text, l.Font, new Size(this.Width - 100, 100000000), TextFormatFlags.WordBreak | TextFormatFlags.TextBoxControl);
             x = !ownMessage ? 0 : this.Width - size.Width - 30;
             l.Location = new Point(x, Y - this.VerticalScroll.Value);
             l.Size = size;
@@ -77,7 +72,6 @@ namespace YuckChatWindow
             l.BorderStyle = BorderStyle.None;
 
             l.BackColor = ownMessage ? Color.FromArgb(0x03, 0x7C, 0xFF) : Color.LightGray;
-            l.Multiline = true;
             this.Controls.Add(l);
         }
     }
