@@ -135,11 +135,13 @@ namespace yuck
 
         private void membersLoadedCallback(MatrixMemberResult matrixMemberResult)
         {
-            lstMembers.Items.Clear();
-
-            foreach (MatrixMemberChunkResult chunk in matrixMemberResult.chunk)
+            if (matrixMemberResult.chunk[0].room_id == MatrixRoom.roomID)
             {
-                lstMembers.Items.Add(chunk.user_id);
+                lstMembers.Items.Clear();
+                foreach (MatrixMemberChunkResult chunk in matrixMemberResult.chunk)
+                {
+                    lstMembers.Items.Add(chunk.user_id);
+                }
             }
         }
 

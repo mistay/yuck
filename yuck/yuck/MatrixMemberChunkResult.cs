@@ -9,6 +9,7 @@ namespace yuck
     public class MatrixMemberChunkResult
     {
         public string event_id { get; set; }
+        public string room_id { get; set; }
         public string user_id { get; set; }
     }
 }
