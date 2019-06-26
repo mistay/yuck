@@ -82,12 +82,14 @@ namespace yuck
         public void processIncomingChatMessageImage(string sender, string filename, Image image)
         {
             yuckChatControl1.AddImage(sender == Businesslogic.Instance.loggedInUserID, image, filename);
+            yuckChatControl1.AutoScrollPosition = new Point(1, 100000000);
         }
 
 
         public void processIncomingChatMessage(string sender, string message)
         {
             yuckChatControl1.AddMessage(sender == Businesslogic.Instance.loggedInUserID, message);
+            yuckChatControl1.AutoScrollPosition = new Point(1, 100000000);
         }
 
         private void LstMembers_SelectedIndexChanged(object sender, EventArgs e)
