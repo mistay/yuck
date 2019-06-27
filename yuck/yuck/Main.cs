@@ -50,6 +50,7 @@ namespace yuck
             Businesslogic.Instance.AvatarURLReceivedEvent += AvatarURLReceivedCallback;
 
             Businesslogic.Instance.TypingEvent += TypingCompletedCallback;
+
         }
 
         private void TypingCompletedCallback(List<string> user_ids)
@@ -407,7 +408,7 @@ namespace yuck
             if (this.WindowState == FormWindowState.Minimized)
             {
                 Hide();
-                notifyIcon1.Visible = true;
+                //notifyIcon1.Visible = true;
             }
         }
 
@@ -457,14 +458,7 @@ namespace yuck
 
         private void NotifyIcon1_Click(object sender, EventArgs e)
         {
-            if (this.Visible)
-                this.Hide();
-            else
-            {
-                Show();
-                this.WindowState = FormWindowState.Normal;
-            }
-            //notifyIcon1.Visible = false;
+            
         }
 
         private void LstRooms_MouseClick(object sender, MouseEventArgs e)
@@ -487,6 +481,36 @@ namespace yuck
                 matrixRoomProperties.Show();
 
             }
+        }
+
+        private void NotifyIcon1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                if (this.Visible)
+                    this.Hide();
+                else
+                {
+                    Show();
+                    this.WindowState = FormWindowState.Normal;
+                }
+            }
+        }
+
+        private void ContextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+
+        }
+
+        private void TstxtExit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void ToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            _reallyQuit = true;
+            Application.Exit();
         }
     }
 }
