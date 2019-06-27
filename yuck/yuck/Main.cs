@@ -27,6 +27,8 @@ namespace yuck
             Businesslogic.Instance.JoinedRoomsLoadedEvent += JoinedRoomsLoadedCallback;
             Businesslogic.Instance.LoginCompletedEvent += LoginCompltedCallback;
 
+            Businesslogic.Instance.RoomsDirectResolvedEvent += RoomsDirectResolvedCallback;
+
             Businesslogic.Instance.SyncCompletedEvent += SyncCompletedCallback;
 
             Businesslogic.Instance.UserPrecenseReceivedEvent += UserPresenceReceivedCallback;
@@ -129,17 +131,7 @@ namespace yuck
             }
         }
 
-        public static string matrixUsernameToShortUsername(string username)
-        {
-            string[] tmp = username.Split(':');
-            if (tmp.Length == 2)
-                if (tmp[0].Length >= 1)
-                    return tmp[0].Substring(1);
-                else
-                    return username;
-            else
-                return username;
-        }
+        
 
         private void SyncCompletedCallback(MatrixSyncResult matrixSyncResult, bool initSync)
         {
@@ -161,13 +153,13 @@ namespace yuck
                                 }
                                 else
                                 {
-                                    notifyIcon1.ShowBalloonTip(calcTimeoutFromWords(events.content.body), String.Format("{0}", matrixUsernameToShortUsername(events.sender)), events.content.body, ToolTipIcon.Info);
+                                    notifyIcon1.ShowBalloonTip(calcTimeoutFromWords(events.content.body), String.Format("{0}", Businesslogic.MatrixUsernameToShortUsername(events.sender)), events.content.body, ToolTipIcon.Info);
                                 }
                             }
 
                             if (events.content.msgtype == "m.image")
                             {
-                                notifyIcon1.ShowBalloonTip(3000, String.Format("{0}", matrixUsernameToShortUsername(events.sender)), "image", ToolTipIcon.Info);
+                                notifyIcon1.ShowBalloonTip(3000, String.Format("{0}", Businesslogic.MatrixUsernameToShortUsername(events.sender)), "image", ToolTipIcon.Info);
                             }
                         }
                     }
@@ -251,6 +243,28 @@ namespace yuck
             Businesslogic.Instance.sync();
         }
 
+        private void RoomsDirectResolvedCallback()
+        {
+            foreach (MatrixRoom matrixRoom in lstRooms.Items)
+            {
+                foreach (KeyValuePair<string, List<string>> d in Businesslogic.Instance.direct)
+                {
+                    foreach (string roomID in d.Value)
+                    {
+                        Console.WriteLine("vergeliche " + roomID + " mit " + matrixRoom.roomID);
+                        if (roomID == matrixRoom.roomID)
+                        {
+                            Console.WriteLine("resolved room: " + d.Key);
+                            matrixRoom.roomNameHumanReadable = d.Key;
+                            matrixRoom.directRoom = true;
+                        }
+                    }
+                }
+            }
+            refreshlstRoomsUpdate();
+
+        }
+
         private void RoomResolvedCallback()
         {
             Console.WriteLine("RoomResolvedCallback()");
@@ -264,6 +278,7 @@ namespace yuck
 
                         // found
                         entry.roomNameHumanReadable = cacheEntry.Value;
+                        entry.directRoom = false;
                         break;
                     }
                 }
@@ -279,6 +294,9 @@ namespace yuck
                 lstRooms.Items[i] = lstRooms.Items[i];
             }
         }
+
+        
+
         private void JoinedRoomsLoadedCallback(MatrixJoinedRoomsResult matrixJoinedRoomsResult)
         {
             lstRooms.Items.Clear();
@@ -287,13 +305,17 @@ namespace yuck
             {
                 // todo: cache lookup needed? could be in cache, right?
 
-                MatrixRoom gUIListboxRoomEntry = new MatrixRoom();
-                gUIListboxRoomEntry.roomID = room;
+                MatrixRoom matrixRoom = new MatrixRoom();
+                matrixRoom.roomID = room;
+
+
+                
+
 
                 Console.WriteLine("added room:  " + room);
-                lstRooms.Items.Add(gUIListboxRoomEntry);
+                lstRooms.Items.Add(matrixRoom);
 
-                Businesslogic.Instance.resolveRoomnameAsync(room);
+                Businesslogic.Instance.resolveRoomname(room);
 
                 /*
                 string found = null;

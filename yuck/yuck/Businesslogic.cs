@@ -36,6 +36,21 @@ namespace yuck
         MatrixLoginResult matrixResult;
         internal string loggedInUserID;
 
+
+        public static string MatrixUsernameToShortUsername(string username)
+        {
+            string[] tmp = username.Split(':');
+            if (tmp.Length == 2)
+                if (tmp[0].Length >= 1)
+                    return tmp[0].Substring(1);
+                else
+                    return username;
+            else
+                return username;
+        }
+
+
+
         public delegate void membersLoadedEvent(MatrixMemberResult matrixMemberResult);
         public event membersLoadedEvent MembersLoaded;
         private void fireMembersLoaded(MatrixMemberResult matrixMemberResult)
@@ -98,6 +113,15 @@ namespace yuck
             }
         }
 
+        public delegate void RoomsDirectResolved();
+        public event RoomsDirectResolved RoomsDirectResolvedEvent;
+        private void fireRoomsDirectResolvedEvent()
+        {
+            if (RoomsDirectResolvedEvent != null)
+            {
+                RoomsDirectResolvedEvent();
+            }
+        }
 
         public delegate void MatrixUploadCompleted(MatrixUploadResult matrixUploadResult);
         public event MatrixUploadCompleted MatrixUploadCompletedEvent;
@@ -186,15 +210,9 @@ namespace yuck
             }
         }
 
-
-        public async Task resolveRoomnameAsync(string roomID)
-        {
-            await resolveRoomnameAwait(roomID);
-        }
-
         public Dictionary<string, string> roomCache = new Dictionary<string, string>();
 
-        internal async Task<MatrixRoomResolvedResult> resolveRoomnameAwait(string roomID)
+        public async Task<object> resolveRoomname(string roomID)
         {
             HttpClient client = new HttpClient();
             MatrixRoomResolvedResult matrixRoomResolvedResult = null;
@@ -409,11 +427,13 @@ namespace yuck
 
         public Dictionary<string, string> presence = new Dictionary<string, string>();
 
+        public Dictionary<string, List<string>> direct = new Dictionary<string, List<string>>();
+
+
         private string _next_batch = null;
 
         public async Task<MatrixSyncResult> sync()
         {
-
             bool initSync = _next_batch == null;
 
             HttpClient client = new HttpClient();
@@ -439,6 +459,43 @@ namespace yuck
 
                     matrixSyncResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixSyncResult>(responseString);
                     _next_batch = matrixSyncResult.next_batch;
+
+
+                    if (matrixSyncResult.account_data.events != null)
+                    {
+                        foreach (SyncResultsAccountDataEvents @event in matrixSyncResult.account_data.events)
+                        {
+                            if (@event.type == "m.direct")
+                            {
+                                System.Collections.Generic.Dictionary<string, object> a = (System.Collections.Generic.Dictionary<string, object>)@event.content;
+
+                                foreach (KeyValuePair<string, object> o in a)
+                                {
+                                    string tmpUser = o.Key;
+
+                                    List<string> tmpRooms = new List<string>();
+                                    foreach (object aaa in (object[])o.Value)
+                                    {
+                                        tmpRooms.Add(aaa.ToString());
+                                    }
+                                    direct.Add(tmpUser, tmpRooms);
+                                }
+
+                            }
+                        }
+
+                        fireRoomsDirectResolvedEvent();
+                    }
+
+                    foreach (KeyValuePair<string, List<string>> d in direct)
+                    {
+                        foreach (string s in d.Value)
+                        {
+                            Console.WriteLine(String.Format("direct: {0} {1}", d.Key, s));
+
+                        }
+                    }
+
 
                     if (matrixSyncResult.presence.events.Count > 0)
                     {
@@ -526,7 +583,7 @@ namespace yuck
                 if (response.IsSuccessStatusCode)
                 {
                     string responseString = response.Content.ReadAsStringAsync().Result;
-                    Console.WriteLine("response from server:" + responseString);
+                    Console.WriteLine("loadRooms() response from server:" + responseString);
 
                     MatrixJoinedRoomsResult matrixJoinedRoomsResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixJoinedRoomsResult>(responseString);
 

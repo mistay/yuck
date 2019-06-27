@@ -16,6 +16,19 @@ namespace yuck
 
         public SyncResultPresence presence { get; set; }
 
+        public SyncResultAccountData account_data { get; set; }
+
+    }
+
+    public class SyncResultAccountData
+    {
+        public List<SyncResultsAccountDataEvents> events { get; set; }
+    }
+    public class SyncResultsAccountDataEvents
+    {
+        public string type { get; set; }
+        public object content { get; set; }
+
     }
 
     public class SyncResultPresence
