@@ -19,6 +19,7 @@ namespace yuck
 
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            _reallyQuit = true;
             Application.Exit();
         }
 
@@ -348,6 +349,7 @@ namespace yuck
         MatrixLoginResult matrixResult;
         private DateTime dateTimeLoginCompleted;
         private bool presenceLoaded;
+        private bool _reallyQuit;
 
         private void Button1_Click(object sender, EventArgs e)
         {
@@ -443,9 +445,14 @@ namespace yuck
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // minimize to system tray
-            e.Cancel = true;
-            Hide();
+
+            if (!_reallyQuit)
+            {
+                // minimize to system tray
+
+                e.Cancel = true;
+                Hide();
+            }
         }
 
         private void NotifyIcon1_Click(object sender, EventArgs e)

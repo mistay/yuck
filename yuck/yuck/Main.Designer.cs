@@ -43,17 +43,17 @@
             this.label1 = new System.Windows.Forms.Label();
             this.lstRooms = new System.Windows.Forms.ListBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.pbAvatar = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.cbPresence = new System.Windows.Forms.ComboBox();
             this.lblUsername = new System.Windows.Forms.Label();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.pbAvatar = new System.Windows.Forms.PictureBox();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAvatar)).BeginInit();
             this.tableLayoutPanel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAvatar)).BeginInit();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -103,14 +103,14 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(146, 26);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
             this.settingsToolStripMenuItem.Text = "&Settings...";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.SettingsToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(146, 26);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
             this.exitToolStripMenuItem.Text = "&Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 
@@ -198,17 +198,6 @@
             this.tableLayoutPanel2.Size = new System.Drawing.Size(322, 74);
             this.tableLayoutPanel2.TabIndex = 13;
             // 
-            // pbAvatar
-            // 
-            this.pbAvatar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pbAvatar.InitialImage = null;
-            this.pbAvatar.Location = new System.Drawing.Point(3, 3);
-            this.pbAvatar.Name = "pbAvatar";
-            this.pbAvatar.Size = new System.Drawing.Size(74, 68);
-            this.pbAvatar.TabIndex = 0;
-            this.pbAvatar.TabStop = false;
-            this.pbAvatar.Click += new System.EventHandler(this.PbAvatar_Click);
-            // 
             // tableLayoutPanel3
             // 
             this.tableLayoutPanel3.ColumnCount = 1;
@@ -253,6 +242,17 @@
             this.notifyIcon1.Click += new System.EventHandler(this.NotifyIcon1_Click);
             this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon1_MouseDoubleClick);
             // 
+            // pbAvatar
+            // 
+            this.pbAvatar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pbAvatar.InitialImage = null;
+            this.pbAvatar.Location = new System.Drawing.Point(3, 3);
+            this.pbAvatar.Name = "pbAvatar";
+            this.pbAvatar.Size = new System.Drawing.Size(74, 68);
+            this.pbAvatar.TabIndex = 0;
+            this.pbAvatar.TabStop = false;
+            this.pbAvatar.Click += new System.EventHandler(this.PbAvatar_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -274,9 +274,9 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pbAvatar)).EndInit();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAvatar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
