@@ -152,6 +152,23 @@ namespace yuck
                     {
                         Console.WriteLine("syncCompletedCallback()");
 
+                        bool skip = false;
+                        foreach (Form form in Application.OpenForms)
+                        {
+                            if (form is Chat)
+                            {
+                                Chat chat = (Chat)form;
+                                if (chat.MatrixRoom.roomID == messagesForRoomID.Key)
+                                {
+                                    // skip notifcation because window is open
+                                    skip = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (skip)
+                            continue;
+
                         MatrixSyncResultTimelineWrapper wrapper = messagesForRoomID.Value;
                         foreach (MatrixSyncResultEvents events in wrapper.timeline.events)
                         {
@@ -261,7 +278,6 @@ namespace yuck
                 {
                     foreach (string roomID in d.Value)
                     {
-                        Console.WriteLine("vergeliche " + roomID + " mit " + matrixRoom.roomID);
                         if (roomID == matrixRoom.roomID)
                         {
                             Console.WriteLine("resolved room: " + d.Key);
@@ -459,7 +475,6 @@ namespace yuck
             if (!_reallyQuit)
             {
                 // minimize to system tray
-
                 e.Cancel = true;
                 Hide();
             }
