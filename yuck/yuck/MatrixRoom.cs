@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace yuck
 {
-    class MatrixRoom
+    public class MatrixRoom
     {
         public string roomID { get; set; }
         public string roomNameHumanReadable { get; set; }
@@ -17,7 +17,22 @@ namespace yuck
         public override string ToString() 
         {
             string direct = directRoom == null ? "" : directRoom ? "direct:" : "room:";
-            return direct + (roomNameHumanReadable == null ? roomID : Businesslogic.MatrixUsernameToShortUsername(roomNameHumanReadable));
+
+
+            string ret = "";
+            if (directRoom)
+            {
+                ret = Businesslogic.MatrixUsernameToShortUsername(roomNameHumanReadable);
+            } else
+            {
+                if (roomNameHumanReadable == null)
+                    ret = roomID;
+                else
+                    ret = roomNameHumanReadable;
+
+                ret += " Room";
+            }
+            return ret;
         }
 
     }

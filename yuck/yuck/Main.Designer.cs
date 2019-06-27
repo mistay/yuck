@@ -176,9 +176,11 @@
             this.lstRooms.Name = "lstRooms";
             this.lstRooms.Size = new System.Drawing.Size(322, 157);
             this.lstRooms.TabIndex = 9;
+            this.lstRooms.MouseClick += new System.Windows.Forms.MouseEventHandler(this.LstRooms_MouseClick);
             this.lstRooms.SelectedIndexChanged += new System.EventHandler(this.LstRooms_SelectedIndexChanged);
             this.lstRooms.DoubleClick += new System.EventHandler(this.LstRooms_DoubleClick);
             this.lstRooms.KeyUp += new System.Windows.Forms.KeyEventHandler(this.LstRooms_KeyUp);
+            this.lstRooms.MouseUp += new System.Windows.Forms.MouseEventHandler(this.LstRooms_MouseUp);
             // 
             // tableLayoutPanel2
             // 

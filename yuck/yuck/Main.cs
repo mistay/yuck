@@ -459,5 +459,27 @@ namespace yuck
             }
             //notifyIcon1.Visible = false;
         }
+
+        private void LstRooms_MouseClick(object sender, MouseEventArgs e)
+        {
+           
+        }
+
+        private void LstRooms_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                int index = lstRooms.IndexFromPoint(e.Location);
+                MatrixRoom matrixroom = (MatrixRoom)lstRooms.Items[index];
+                Console.WriteLine(matrixroom.roomID);
+
+                MatrixRoomProperties matrixRoomProperties =new MatrixRoomProperties();
+                matrixRoomProperties.matrixRoom = matrixroom;
+                matrixRoomProperties.updateGUI();
+
+                matrixRoomProperties.Show();
+
+            }
+        }
     }
 }
