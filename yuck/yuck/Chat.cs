@@ -21,7 +21,7 @@ namespace yuck
 
 
         private MatrixRoom _matrixroom;
-        internal MatrixRoom MatrixRoom { get { return _matrixroom; } set { _matrixroom = value; this.Text = "Yuck Chat Room " + _matrixroom.roomNameHumanReadable; } }
+        internal MatrixRoom MatrixRoom { get { return _matrixroom; } set { _matrixroom = value; this.Text = "Yuck Chat Room " + (_matrixroom == null ? "" : _matrixroom.roomNameHumanReadable); } }
 
         private void Chat_Load(object sender, EventArgs e)
         {

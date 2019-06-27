@@ -78,7 +78,15 @@ namespace yuck
 
             if (uri == null)
             {
-                pbAvatar.Image = Properties.Resources.User_Avatar;
+                Bitmap b = new Bitmap(100, 100);
+                Graphics g = Graphics.FromImage(b);
+                Brush brush = Brushes.White;
+                g.FillEllipse(Brushes.Blue, new Rectangle(0, 0, 100, 100));
+                string firstcharusername = (Businesslogic.MatrixUsernameToShortUsername(Businesslogic.Instance.loggedInUserID)).Substring(0, 1).ToUpper();
+                g.DrawString(firstcharusername, new Font(FontFamily.GenericSansSerif, 70), brush , new Point(5, 0));
+
+                pbAvatar.Image = b;  // Properties.Resources.User_Avatar;
+
                 pbAvatar.SizeMode = PictureBoxSizeMode.Zoom;
             }
             else
