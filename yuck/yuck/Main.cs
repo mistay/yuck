@@ -387,6 +387,7 @@ namespace yuck
         {
             Chat chat = new Chat();
             chat.MatrixRoom = matrixRoom;
+            
             chat.Show();
         }
 

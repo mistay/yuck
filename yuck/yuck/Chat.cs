@@ -21,12 +21,12 @@ namespace yuck
 
 
         private MatrixRoom _matrixroom;
-        internal MatrixRoom MatrixRoom { get { return _matrixroom; } set { _matrixroom = value; this.Text = "Yuck Chat Room " + (_matrixroom == null ? "" : _matrixroom.roomNameHumanReadable); } }
+        internal MatrixRoom MatrixRoom { get { return _matrixroom; } set { if (value == null) return; _matrixroom = value; this.Text = "Yuck Chat Room " + _matrixroom.roomNameHumanReadable; init(); } }
 
-        private void Chat_Load(object sender, EventArgs e)
+        private void init()
         {
             Businesslogic.Instance.MembersLoaded += membersLoadedCallback;
-            Businesslogic.Instance.loadMembers( MatrixRoom.roomID);
+            Businesslogic.Instance.loadMembers(MatrixRoom.roomID);
 
             // prevent "ding" sound when pressing enter on txtMessage, weired.
             // https://stackoverflow.com/questions/6290967/stop-the-ding-when-pressing-enter
@@ -39,6 +39,13 @@ namespace yuck
             //Businesslogic.Instance.syncAsync(null);
             Businesslogic.Instance.MediadownloadCompletedEvent += MediadownloadCompletedCallback;
 
+            if (_matrixroom.directRoom)
+            {
+                splitContainer1.Panel2Collapsed = true;
+            } 
+        }
+        private void Chat_Load(object sender, EventArgs e)
+        {
         }
 
         private void MediadownloadCompletedCallback(MatrixMediaRequest matrixMediaRequest, Image image)
@@ -158,16 +165,13 @@ namespace yuck
         private void Chat_DragEnter(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.Copy;
-            Console.WriteLine("dragged");
         }
 
         private void Chat_DragDrop(object sender, DragEventArgs e)
         {
-            Console.WriteLine("dropped");
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
             foreach (string file in files)
             {
-                Console.WriteLine("file: " + file);
                 Businesslogic.Instance.sendMessageFile(MatrixRoom.roomID, file);
             }
         }
@@ -180,6 +184,16 @@ namespace yuck
         {
             yuckChatControl1.AddMessage(true, "foo\r\n\aaa");
             yuckChatControl1.AddMessage(false, "foo\r\n\aaa");
+        }
+
+        private void SplitContainer1_Panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void TableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }
