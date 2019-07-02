@@ -66,6 +66,9 @@ namespace yuck
 
         private void TxtMessage_TextChanged(object sender, EventArgs e)
         {
+            if (MatrixRoom == null)
+                return;
+
             if (txtMessage.Text=="")
             {
                 Businesslogic.Instance.UserTyping(MatrixRoom.roomID, false);
