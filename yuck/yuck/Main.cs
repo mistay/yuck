@@ -126,6 +126,7 @@ namespace yuck
                             message = "user went offline";
                             break;
                         default:
+                            message = "presence changed but dunno how. neither online nor offline.";
                             break;
                     }
 
@@ -472,12 +473,17 @@ namespace yuck
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
 
-            if (!_reallyQuit)
+            if (_reallyQuit)
+            {
+                notifyIcon1.Visible = false; // hide icon manually as windows does not remove icons properly sometimes
+            } else
             {
                 // minimize to system tray
                 e.Cancel = true;
                 Hide();
             }
+
+
         }
 
         private void NotifyIcon1_Click(object sender, EventArgs e)
