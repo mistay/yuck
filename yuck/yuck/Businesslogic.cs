@@ -567,7 +567,6 @@ namespace yuck
 
         internal async Task<MatrixLoginResult> loadRooms()
         {
-            MatrixLoginResult matrixLoginResult = null;
             HttpClient client = new HttpClient();
 
             client.BaseAddress = new Uri(String.Format("https://{0}/_matrix/client/r0/joined_rooms?access_token={1}",Properties.Settings.Default.matrixserver_hostname,  matrixResult.access_token));
@@ -597,15 +596,7 @@ namespace yuck
             return null;
         }
 
-        public void loadMembers(string roomID)
-        {
-            loadMembersAsync(roomID);
-        }
-        private async Task loadMembersAsync(string roomID)
-        {
-            await loadMembersAwait(roomID);
-        }
-        internal async Task<MatrixLoginResult> loadMembersAwait(string roomID)
+        internal async Task<MatrixLoginResult> loadMembers(string roomID)
         {
             MatrixLoginResult matrixLoginResult = null;
             HttpClient client = new HttpClient();
@@ -835,12 +826,7 @@ namespace yuck
             return matrixLoginResult;
         }
 
-        public async Task sendMessageImage(string roomID, string filename, string original_source_filename)
-        {
-            await sendMessageImageAwait(roomID, filename, original_source_filename);
-        }
-
-        internal async Task<MatrixLoginResult> sendMessageImageAwait(string roomID, string mxc_uri, string original_source_filename)
+        internal async Task<MatrixLoginResult> sendMessageImage(string roomID, string mxc_uri, string original_source_filename)
         {
             MatrixLoginResult matrixLoginResult = null;
             HttpClient client = new HttpClient();
@@ -873,18 +859,13 @@ namespace yuck
 
                 if (response.IsSuccessStatusCode)
                 {
-
                     string responseString = response.Content.ReadAsStringAsync().Result;
                     Console.WriteLine("response from server:" + responseString);
 
                     matrixLoginResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixLoginResult>(responseString);
 
-
                     Console.WriteLine("livedataResult user_id:" + matrixLoginResult.user_id);
-
-
                 }
-
             }
             catch (Exception e)
             {
@@ -897,15 +878,13 @@ namespace yuck
             return matrixLoginResult;
         }
 
-        internal async Task<MatrixLoginResult> sendMessage(string roomID, string message)
+        internal async Task sendMessage(string roomID, string message)
         {
-            MatrixLoginResult matrixLoginResult = null;
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri(String.Format("https://{0}/_matrix/client/r0/rooms/{1}/send/m.room.message?access_token={2}", Properties.Settings.Default.matrixserver_hostname, roomID, matrixResult.access_token));
             client.DefaultRequestHeaders
                   .Accept
                   .Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
 
@@ -917,7 +896,6 @@ namespace yuck
                 ";
             String jsonLogin = String.Format(template, message);
             jsonLogin = "{" + jsonLogin + "}";
-
 
             StringContent myStringContent = new StringContent(jsonLogin);
             try
@@ -934,21 +912,14 @@ namespace yuck
 
                     string responseString = response.Content.ReadAsStringAsync().Result;
                     Console.WriteLine("sendMessage() response from server:" + responseString);
-
                     //matrixLoginResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixLoginResult>(responseString);
-
                     //Console.WriteLine("livedataResult user_id:" + matrixLoginResult.user_id);
-
-                    
                 }
-
             }
             catch (Exception e)
             {
                 Console.WriteLine("could not sendMessage(): " + e.Message);
             }
-
-            return null;
         }
 
 

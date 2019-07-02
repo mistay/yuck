@@ -12,6 +12,10 @@ namespace yuck
 {
     public partial class Main : Form
     {
+
+        private bool presenceLoaded;
+        private bool _reallyQuit;
+
         public Main()
         {
             InitializeComponent();
@@ -364,18 +368,8 @@ namespace yuck
                 {
                     
                 }*/
-
-
-                
             }
         }
-
-
-
-        MatrixLoginResult matrixResult;
-        private DateTime dateTimeLoginCompleted;
-        private bool presenceLoaded;
-        private bool _reallyQuit;
 
         private void Button1_Click(object sender, EventArgs e)
         {
@@ -402,9 +396,7 @@ namespace yuck
 
         private void openChatWindow(MatrixRoom matrixRoom)
         {
-            Chat chat = new Chat();
-            chat.MatrixRoom = matrixRoom;
-            
+            Chat chat = new Chat(matrixRoom);
             chat.Show();
         }
 

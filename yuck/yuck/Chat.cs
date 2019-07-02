@@ -14,14 +14,18 @@ namespace yuck
 {
     public partial class Chat : Form
     {
-        public Chat()
+        private Chat()
         {
             InitializeComponent();
         }
 
+        public Chat(MatrixRoom matrixRoom) : this()
+        {
+            MatrixRoom = matrixRoom;
+        }
 
         private MatrixRoom _matrixroom;
-        internal MatrixRoom MatrixRoom { get { return _matrixroom; } set { if (value == null) return; _matrixroom = value; this.Text = "Yuck Chat Room " + _matrixroom.roomNameHumanReadable; init(); } }
+        internal MatrixRoom MatrixRoom { get { return _matrixroom; } set { if (value == null) return; _matrixroom = value; this.Text = "" + _matrixroom.ToString(); init(); } }
 
         private void init()
         {
