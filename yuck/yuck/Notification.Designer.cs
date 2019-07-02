@@ -57,6 +57,10 @@
             this.Text = "Notification";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.Notification_Load);
+            this.Click += new System.EventHandler(this.Notification_Click);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Notification_MouseDown);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Notification_MouseMove);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Notification_MouseUp);
             this.ResumeLayout(false);
             this.PerformLayout();
 

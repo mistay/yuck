@@ -32,9 +32,13 @@ namespace yuck
                 return instance;
             }
         }
+
+        public Main MainForm { get; internal set; }
+
         private static readonly HttpClient client = new HttpClient();
         MatrixLoginResult matrixResult;
         internal string loggedInUserID;
+        public Dictionary<string, string> roomCache = new Dictionary<string, string>();
 
 
         public static string MatrixUsernameToShortUsername(string username)
@@ -135,6 +139,12 @@ namespace yuck
 
 
         public delegate void AvatarURLReceived(MatrixAvatarResult matrixAvatarResult);
+
+        internal void BringToFront(string roomID)
+        {
+            
+        }
+
         public event AvatarURLReceived AvatarURLReceivedEvent;
         private void fireAvatarURLReceivedEvent(MatrixAvatarResult matrixAvatarResult)
         {
@@ -210,7 +220,6 @@ namespace yuck
             }
         }
 
-        public Dictionary<string, string> roomCache = new Dictionary<string, string>();
 
         public async Task<object> resolveRoomname(string roomID)
         {

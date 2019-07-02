@@ -19,6 +19,8 @@ namespace yuck
         public Main()
         {
             InitializeComponent();
+
+            Businesslogic.Instance.MainForm = this;
         }
 
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -55,6 +57,7 @@ namespace yuck
 
             Businesslogic.Instance.TypingEvent += TypingCompletedCallback;
 
+            (new Notification(10000, "title", "Message")).Show();
         }
 
         private void TypingCompletedCallback(List<string> user_ids)
@@ -134,7 +137,8 @@ namespace yuck
                             break;
                     }
 
-                    notifyIcon1.ShowBalloonTip(1000, message, c.Key, ToolTipIcon.Info);
+                    (new Notification(1000, message, c.Key)).Show();
+                    //notifyIcon1.ShowBalloonTip(1000, message, c.Key, ToolTipIcon.Info);
                 }
             }
             presenceLoaded = true;
@@ -153,9 +157,13 @@ namespace yuck
             if (matrixSyncResult != null) {
                 if (!initSync)
                 {
+
+                    // raise notifications for messages closed room-windows
                     foreach (KeyValuePair<string, MatrixSyncResultTimelineWrapper> messagesForRoomID in matrixSyncResult.rooms.join)
                     {
                         Console.WriteLine("syncCompletedCallback()");
+
+                        string roomID = messagesForRoomID.Key;
 
                         bool skip = false;
                         foreach (Form form in Application.OpenForms)
@@ -178,6 +186,9 @@ namespace yuck
                         foreach (MatrixSyncResultEvents events in wrapper.timeline.events)
                         {
 
+                            string sender = String.Format("{0}", Businesslogic.MatrixUsernameToShortUsername(events.sender));
+                            int timeout = 3000;
+                            string message = "";
                             if (events.content.msgtype == "m.text")
                             {
                                 if (events.content.format == "org.matrix.custom.html")
@@ -185,19 +196,35 @@ namespace yuck
                                 }
                                 else
                                 {
-                                    notifyIcon1.ShowBalloonTip(calcTimeoutFromWords(events.content.body), String.Format("{0}", Businesslogic.MatrixUsernameToShortUsername(events.sender)), events.content.body, ToolTipIcon.Info);
+                                    timeout = calcTimeoutFromWords(events.content.body);
+                                    message = events.content.body;
                                 }
                             }
 
                             if (events.content.msgtype == "m.image")
                             {
-                                notifyIcon1.ShowBalloonTip(3000, String.Format("{0}", Businesslogic.MatrixUsernameToShortUsername(events.sender)), "image", ToolTipIcon.Info);
+                                message = "new image received";
                             }
+                            Notification n = new Notification(timeout, sender, message);
+
+                            // todo: loop through matrixrooms in businesslogic and resolve there. note: Businesslogic.Instance.roomCache does not contain MatrixRooms
+                            foreach (MatrixRoom m in lstRooms.Items)
+                            {
+                                if (m.roomID == roomID)
+                                {
+                                    //found
+                                    n.Tag = m;
+                                    break;
+                                }
+                            }
+                            n.NotificationClickedEvent += NotificationClickedCallback; // todo: howto/when unsubscribe?
+                            n.Show();
+
                         }
                     }
                 }
 
-
+                // show messages (in chat history) in openend room-windows
                 foreach (Form form in Application.OpenForms)
                 {
                     if (form is Chat)
@@ -252,6 +279,20 @@ namespace yuck
             Businesslogic.Instance.sync();
         }
 
+        private void NotificationClickedCallback(object Tag)
+        {
+            if (Tag is MatrixRoom)
+            {
+                MatrixRoom matrixRoom = (MatrixRoom)Tag;
+
+                // todo: check if window already open. 
+                // really needed? should not be open as it raised notifiaction. an open-windowed room would not cause a notification.
+                Chat chat = new Chat(matrixRoom);
+                chat.Show();
+                chat.BringToFront();
+            }
+        }
+
         private int calcTimeoutFromWords(string message)
         {
             // https://de.wikipedia.org/wiki/Lesegeschwindigkeit
@@ -261,7 +302,8 @@ namespace yuck
 
             int timeout = (int)(((float)numWords / (float)words_per_minute) * 60 * 1000);
 
-            if (timeout > 30000) timeout = 30000;
+            if (timeout < 1000) timeout = 1000; //minimum display time: it's prette uncomfortable to display messages no longer than this time
+            if (timeout > 30000) timeout = 30000; // maximum display time
 
             return timeout;
         }
@@ -339,11 +381,6 @@ namespace yuck
                 MatrixRoom matrixRoom = new MatrixRoom();
                 matrixRoom.roomID = room;
 
-
-                
-
-
-                Console.WriteLine("added room:  " + room);
                 lstRooms.Items.Add(matrixRoom);
 
                 Businesslogic.Instance.resolveRoomname(room);
@@ -425,11 +462,9 @@ namespace yuck
         {
             if (this.WindowState == FormWindowState.Minimized)
             {
-                Hide();
-                //notifyIcon1.Visible = true;
+                //Hide();
             }
         }
-
         private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             
@@ -464,7 +499,6 @@ namespace yuck
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
-
             if (_reallyQuit)
             {
                 notifyIcon1.Visible = false; // hide icon manually as windows does not remove icons properly sometimes
@@ -474,8 +508,6 @@ namespace yuck
                 e.Cancel = true;
                 Hide();
             }
-
-
         }
 
         private void NotifyIcon1_Click(object sender, EventArgs e)
