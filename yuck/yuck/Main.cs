@@ -409,8 +409,27 @@ namespace yuck
 
         private void openChatWindow(MatrixRoom matrixRoom)
         {
-            Chat chat = new Chat(matrixRoom);
-            chat.Show();
+            bool found = false;
+            foreach (Form form in Application.OpenForms)
+            {
+                if (form is Chat)
+                {
+                    Chat chat = (Chat)form;
+                    if (chat.MatrixRoom.roomID == matrixRoom.roomID)
+                    {
+                        found = true;
+                        // found
+                        // already open, bring to front
+                        chat.BringToFront();
+                        break;
+                    }
+                }
+            }
+            if (!found)
+            {
+                // open new chat window
+                (new Chat(matrixRoom)).Show();
+            }
         }
 
         private void StatusStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
