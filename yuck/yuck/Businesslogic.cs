@@ -291,9 +291,12 @@ namespace yuck
             return null;
         }
 
-        internal async Task<Image> downloadMedia(MatrixMediaRequest matrixImageRequest,  Uri uri)
+        internal async Task<Image> downloadMedia(MatrixMediaRequest matrixImageRequest,  string mxcurl)
         {
             HttpClient client = new HttpClient();
+
+            Uri uri = MXC2HTTP(mxcurl);
+
             //string uri = String.Format("https://{0}/_matrix/media/r0/download/st0ne.net/wEmUPhSlPdqDNlBHxlBAHAVx", Properties.Settings.Default.matrixserver_hostname);
             client.BaseAddress = uri;
             client.DefaultRequestHeaders
@@ -311,6 +314,8 @@ namespace yuck
                     s.Seek(0, SeekOrigin.Begin);
                     Image i = Image.FromStream(s);
 
+                    appendImageToChatmessages(mxcurl, i);
+
                     fireMediadownloadCompletedEvent(matrixImageRequest, i);
                 }
             }
@@ -320,6 +325,24 @@ namespace yuck
             }
             return null;
         }
+
+        private void appendImageToChatmessages(string url, Image i)
+        {
+            foreach (ChatMessage chatMessage in chatMessages)
+            {
+                if (chatMessage is ChatMessageImage)
+                {
+                    ChatMessageImage chatMessageImage = (ChatMessageImage)chatMessage;
+                    if (chatMessageImage.Url == url) {
+                        // found
+
+                        chatMessage.Image = i;
+                        break;
+                    }
+                }
+            }
+        }
+
         internal async Task<Image> downloadAvatar(Uri uri)
         {
             HttpClient client = new HttpClient();
@@ -501,7 +524,6 @@ namespace yuck
                         foreach (string s in d.Value)
                         {
                             Console.WriteLine(String.Format("direct: {0} {1}", d.Key, s));
-
                         }
                     }
 
@@ -573,7 +595,7 @@ namespace yuck
                         MatrixSyncResultTimelineWrapper wrapper = messagesForRoomID.Value;
                         foreach (MatrixSyncResultEvents events in wrapper.timeline.events)
                         {
-
+                            ChatMessage chatMessage = null;
                             if (events.content.msgtype == "m.text")
                             {
                                 string message = "";
@@ -586,20 +608,21 @@ namespace yuck
                                 {
                                     message = events.content.body;
                                 }
-                                ChatMessage chatMessage = new ChatMessage(roomID, events.sender, message);
-                                chatMessages.Add(chatMessage);
-                            }
-
-                            if (events.content.msgtype == "m.image")
-                            {
-
+                                chatMessage = new ChatMessage(roomID, events.sender, message);
+                            } else if (events.content.msgtype == "m.image") {
                                 MatrixMediaRequest matrixMediaRequest = new MatrixMediaRequest();
                                 matrixMediaRequest.filename = events.content.body;
                                 matrixMediaRequest.sender = events.sender;
                                 matrixMediaRequest.roomID = roomID;
 
-                                downloadMedia(matrixMediaRequest, MXC2HTTP(events.content.url));
+                                chatMessage = new ChatMessageImage(roomID, events.sender, events.content.body, events.content.url);
+                                downloadMedia(matrixMediaRequest, events.content.url);
                             }
+                            if (chatMessage!=null)
+                                chatMessages.Add(chatMessage);
+
+
+
                             //chat.processIncomingChatMessage(events.content.ciphertext);
                         }
                     }

@@ -203,7 +203,18 @@ namespace yuck
             {
                 if (chatMessage.RoomID == MatrixRoom.roomID)
                 {
-                    processIncomingChatMessage(chatMessage.Sender, chatMessage.Message);
+                    if (chatMessage is ChatMessageImage)
+                    {
+                        ChatMessageImage chatMessageImage = (ChatMessageImage)chatMessage;
+
+                        processIncomingChatMessageImage(chatMessageImage.Sender, chatMessageImage.Message, chatMessageImage.Image);
+
+                    }
+                    else
+                    {
+                        processIncomingChatMessage(chatMessage.Sender, chatMessage.Message);
+
+                    }
                 }
             }
         }

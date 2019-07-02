@@ -72,6 +72,7 @@
       <DependentUpon>Chat.cs</DependentUpon>
     </Compile>
     <Compile Include="ChatMessage.cs" />
+    <Compile Include="ChatMessageImage.cs" />
     <Compile Include="MatrixRoomProperties.cs">
       <SubType>Form</SubType>
     </Compile>

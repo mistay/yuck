@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 namespace yuck
 {
@@ -9,6 +10,7 @@ namespace yuck
         public bool Displayed { get; set; }
         public string RoomID { get; set; }
         public DateTime timeReceived { get; set; }
+        public Image Image { get; internal set; }
 
         private ChatMessage()
         {
