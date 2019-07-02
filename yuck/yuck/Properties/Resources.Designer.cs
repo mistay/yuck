@@ -63,6 +63,15 @@ namespace yuck.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.IO.UnmanagedMemoryStream ähnlich wie System.IO.MemoryStream.
         /// </summary>
+        internal static System.IO.UnmanagedMemoryStream icq_knock {
+            get {
+                return ResourceManager.GetStream("icq_knock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.IO.UnmanagedMemoryStream ähnlich wie System.IO.MemoryStream.
+        /// </summary>
         internal static System.IO.UnmanagedMemoryStream icq_uh_oh {
             get {
                 return ResourceManager.GetStream("icq_uh_oh", resourceCulture);

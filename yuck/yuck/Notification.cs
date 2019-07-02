@@ -30,6 +30,8 @@ namespace yuck
         }
 
         public object Tag { get; set; }
+        public UnmanagedMemoryStream Audiofile { get; internal set; }
+
         public Notification(int delay, string sender, string message)
         {
             InitializeComponent();
@@ -47,8 +49,9 @@ namespace yuck
             t.Interval = 1;
             t.Start();
 
-            System.Media.SoundPlayer player = new System.Media.SoundPlayer(Properties.Resources.icq_uh_oh);
-            player.Play();
+            Audiofile = Properties.Resources.icq_uh_oh;
+
+            
         }
 
 
@@ -122,6 +125,7 @@ namespace yuck
 
         private void Notification_Load(object sender, EventArgs e)
         {
+            
         }
 
         private void Notification_MouseDown(object sender, MouseEventArgs e)
@@ -161,6 +165,12 @@ namespace yuck
         {
             fadeOut();
             fireNotificationClickedEvent();
+        }
+
+        private void Notification_Shown(object sender, EventArgs e)
+        {
+            System.Media.SoundPlayer player = new System.Media.SoundPlayer(Audiofile);
+            player.Play();
         }
     }
 }

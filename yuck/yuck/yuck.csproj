@@ -173,5 +173,8 @@
   <ItemGroup>
     <None Include="Resources\icq-uh-oh.wav" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icq-knock.wav" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

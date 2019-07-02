@@ -56,8 +56,6 @@ namespace yuck
             Businesslogic.Instance.AvatarURLReceivedEvent += AvatarURLReceivedCallback;
 
             Businesslogic.Instance.TypingEvent += TypingCompletedCallback;
-
-            //(new Notification(10000, "title", "Message")).Show();
         }
 
         private void TypingCompletedCallback(List<string> user_ids)
@@ -137,7 +135,9 @@ namespace yuck
                             break;
                     }
 
-                    (new Notification(1000, message, c.Key)).Show();
+                    Notification n = new Notification(1000, message, c.Key);
+                    n.Audiofile = Properties.Resources.icq_knock;
+                    n.Show();
                     //notifyIcon1.ShowBalloonTip(1000, message, c.Key, ToolTipIcon.Info);
                 }
             }
