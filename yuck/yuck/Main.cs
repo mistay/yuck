@@ -76,7 +76,7 @@ namespace yuck
                 status = String.Join(" ", user_ids) + " are typing...";
             }
 
-            tsstatus.Text = status;
+            tsStatuslabel.Text = status;
 ;        }
 
         private void AvatarURLReceivedCallback(MatrixAvatarResult matrixAvatarResult)
@@ -287,7 +287,7 @@ namespace yuck
         public void LoginCompltedCallback()
         {
             presenceLoaded = false;
-            tsstatus.Text = "Login Completed";
+            tsStatuslabel.Text = "Login Completed";
             Businesslogic.Instance.whoamiAsync();
             Businesslogic.Instance.loadRooms();
             Businesslogic.Instance.sync();
@@ -566,6 +566,17 @@ namespace yuck
         {
             _reallyQuit = true;
             this.Close();
+        }
+
+        private void ExitToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            _reallyQuit = true;
+            Application.Exit();
+        }
+
+        private void SettingsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            (new Settings()).ShowDialog();
         }
     }
 }
