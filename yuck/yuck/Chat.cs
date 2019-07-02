@@ -64,19 +64,18 @@ namespace yuck
             txtMessage.Focus();
         }
 
+        private bool _isTyping = false;
         private void TxtMessage_TextChanged(object sender, EventArgs e)
         {
             if (MatrixRoom == null)
                 return;
 
-            if (txtMessage.Text=="")
-            {
-                Businesslogic.Instance.UserTyping(MatrixRoom.roomID, false);
-            } else
-            {
-                Businesslogic.Instance.UserTyping(MatrixRoom.roomID, true);
+            bool newstate = txtMessage.Text != "";
 
-            }
+            if (newstate !=_isTyping)
+                Businesslogic.Instance.UserTyping(MatrixRoom.roomID, newstate);
+
+            _isTyping = newstate;
         }
 
         private void TxtMessage_KeyUp(object sender, KeyEventArgs e)
