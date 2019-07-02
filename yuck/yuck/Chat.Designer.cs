@@ -146,6 +146,7 @@
             this.Name = "Chat";
             this.Text = "YuckRoomChat";
             this.Load += new System.EventHandler(this.Chat_Load);
+            this.SizeChanged += new System.EventHandler(this.Chat_SizeChanged);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Chat_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Chat_DragEnter);
             this.tableLayoutPanel1.ResumeLayout(false);

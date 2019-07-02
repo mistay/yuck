@@ -13,6 +13,8 @@ namespace YuckChatWindow
     public partial class YuckChatControl: UserControl
     {
         public int Y;
+        private List<Component> yuckComponents = new List<Component>();
+
 
         public YuckChatControl()
         {
@@ -28,6 +30,8 @@ namespace YuckChatWindow
         {
             Console.WriteLine("new y: " + Y);
             TextBox l = new TextBox();
+            yuckComponents.Add(l);
+
             l.Multiline = true;
             l.Text = message;
             Size size = TextRenderer.MeasureText(l.Text, l.Font, new Size(this.Width - 100, 100000000), TextFormatFlags.WordBreak | TextFormatFlags.TextBoxControl);
@@ -51,6 +55,7 @@ namespace YuckChatWindow
         public void AddImage(bool ownMessage, Image image, string message)
         {
             PictureBox p = new PictureBox();
+            yuckComponents.Add(p);
             p.Image = image;
             p.Size = new Size(100, 100);
             p.SizeMode = PictureBoxSizeMode.Zoom;
@@ -72,7 +77,14 @@ namespace YuckChatWindow
             l.BorderStyle = BorderStyle.None;
 
             l.BackColor = ownMessage ? Color.FromArgb(0x03, 0x7C, 0xFF) : Color.LightGray;
+            yuckComponents.Add(l);
             this.Controls.Add(l);
+        }
+
+        public void Clear()
+        {
+            this.Controls.Clear();
+            Y = 0;
         }
     }
 }

@@ -62,7 +62,6 @@ namespace yuck
         {
             processChatMessage();
             txtMessage.Focus();
-
         }
 
         private void TxtMessage_TextChanged(object sender, EventArgs e)
@@ -199,24 +198,38 @@ namespace yuck
 
         private void YuckChatControl1_Load(object sender, EventArgs e)
         {
-            foreach (ChatMessage chatMessage in Businesslogic.Instance.chatMessages)
+            displayAllMessages();
+        }
+
+        private void displayAllMessages()
+        {
+            if (MatrixRoom != null)
             {
-                if (chatMessage.RoomID == MatrixRoom.roomID)
+                foreach (ChatMessage chatMessage in Businesslogic.Instance.chatMessages)
                 {
-                    if (chatMessage is ChatMessageImage)
+                    if (chatMessage.RoomID == MatrixRoom.roomID)
                     {
-                        ChatMessageImage chatMessageImage = (ChatMessageImage)chatMessage;
+                        if (chatMessage is ChatMessageImage)
+                        {
+                            ChatMessageImage chatMessageImage = (ChatMessageImage)chatMessage;
+                            processIncomingChatMessageImage(chatMessageImage.Sender, chatMessageImage.Message, chatMessageImage.Image);
 
-                        processIncomingChatMessageImage(chatMessageImage.Sender, chatMessageImage.Message, chatMessageImage.Image);
+                        }
+                        else
+                        {
+                            processIncomingChatMessage(chatMessage.Sender, chatMessage.Message);
+                        }
 
-                    }
-                    else
-                    {
-                        processIncomingChatMessage(chatMessage.Sender, chatMessage.Message);
-
+                        chatMessage.Displayed = true;
                     }
                 }
             }
+        }
+
+        private void Chat_SizeChanged(object sender, EventArgs e)
+        {
+            yuckChatControl1.Clear();
+            displayAllMessages();
         }
     }
 }
