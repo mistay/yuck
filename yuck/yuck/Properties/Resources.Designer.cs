@@ -61,12 +61,11 @@ namespace yuck.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        ///   Sucht eine lokalisierte Ressource vom Typ System.IO.UnmanagedMemoryStream ähnlich wie System.IO.MemoryStream.
         /// </summary>
-        internal static System.Drawing.Bitmap User_Avatar {
+        internal static System.IO.UnmanagedMemoryStream icq_uh_oh {
             get {
-                object obj = ResourceManager.GetObject("User_Avatar", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetStream("icq_uh_oh", resourceCulture);
             }
         }
     }
