@@ -76,6 +76,7 @@
             this.splitContainer1.Size = new System.Drawing.Size(544, 308);
             this.splitContainer1.SplitterDistance = 369;
             this.splitContainer1.TabIndex = 1;
+            this.splitContainer1.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SplitContainer1_SplitterMoved);
             // 
             // yuckChatControl1
             // 

@@ -85,6 +85,7 @@ namespace yuck
             return new Uri(String.Format("https://{0}/_matrix/media/r0/download/{1}{2}", Properties.Settings.Default.matrixserver_hostname, u.Host, u.AbsolutePath ));
         }
 
+        
         public delegate void Whoami(MatrixWhoamiResult matrixWhoamiResult);
         public event Whoami WhoamiEvent;
         private void fireWhoamiEvent(MatrixWhoamiResult matrixWhoamiResult)
@@ -220,6 +221,53 @@ namespace yuck
             }
         }
 
+
+
+
+        internal async Task<MatrixLoginResult> UserTyping(string roomID, bool isTyping)
+        {
+            HttpClient client = new HttpClient();
+
+            string uri = String.Format("https://{0}/_matrix/client/r0/rooms/{1}/typing/{2}?access_token={3}", Properties.Settings.Default.matrixserver_hostname, roomID, HttpUtility.UrlEncode(loggedInUserID), matrixResult.access_token);
+            Console.WriteLine("uri: " + uri);
+            client.BaseAddress = new Uri(uri);
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
+
+            String template = @"
+                  ""typing"": ""{0}"",
+                  ""timeout"": 1000
+                ";
+            String jsonLogin = String.Format(template, isTyping ? "true" : "false");
+            jsonLogin = "{" + jsonLogin + "}";
+
+            StringContent myStringContent = new StringContent(jsonLogin);
+            try
+            {
+                Console.WriteLine("UserTyping() calling: " + client.BaseAddress + " w/ content: " + jsonLogin);
+                HttpResponseMessage response = await client.PutAsync(client.BaseAddress, myStringContent);
+
+                Task<string> sss = response.Content.ReadAsStringAsync();
+
+                Console.WriteLine("UserTyping() response status code:" + response.StatusCode);
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    string responseString = response.Content.ReadAsStringAsync().Result;
+                    Console.WriteLine("UserTyping() response from server:" + responseString);
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("could not UserTyping(): " + e.Message);
+            }
+            return null;
+        }
 
         public async Task<object> resolveRoomname(string roomID)
         {

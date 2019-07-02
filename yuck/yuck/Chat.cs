@@ -66,6 +66,14 @@ namespace yuck
 
         private void TxtMessage_TextChanged(object sender, EventArgs e)
         {
+            if (txtMessage.Text=="")
+            {
+                Businesslogic.Instance.UserTyping(MatrixRoom.roomID, false);
+            } else
+            {
+                Businesslogic.Instance.UserTyping(MatrixRoom.roomID, true);
+
+            }
         }
 
         private void TxtMessage_KeyUp(object sender, KeyEventArgs e)
@@ -229,6 +237,11 @@ namespace yuck
         private void Chat_SizeChanged(object sender, EventArgs e)
         {
             yuckChatControl1.Clear();
+            displayAllMessages();
+        }
+
+        private void SplitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
+        {
             displayAllMessages();
         }
     }
