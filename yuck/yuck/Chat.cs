@@ -38,9 +38,6 @@ namespace yuck
             this.AcceptButton = btnSend;
 
             Businesslogic.Instance.MatrixUploadCompletedEvent += MatrixUploadCompletedCallback; ;
-            //Businesslogic.Instance.MessageCompletedEvent += MessageCompletedCallback; ;
-
-            //Businesslogic.Instance.syncAsync(null);
             Businesslogic.Instance.MediadownloadCompletedEvent += MediadownloadCompletedCallback;
 
             if (_matrixroom.directRoom)
@@ -198,6 +195,17 @@ namespace yuck
         private void TableLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void YuckChatControl1_Load(object sender, EventArgs e)
+        {
+            foreach (ChatMessage chatMessage in Businesslogic.Instance.chatMessages)
+            {
+                if (chatMessage.RoomID == MatrixRoom.roomID)
+                {
+                    processIncomingChatMessage(chatMessage.Sender, chatMessage.Message);
+                }
+            }
         }
     }
 }

@@ -86,6 +86,7 @@
             this.yuckChatControl1.Name = "yuckChatControl1";
             this.yuckChatControl1.Size = new System.Drawing.Size(369, 308);
             this.yuckChatControl1.TabIndex = 1;
+            this.yuckChatControl1.Load += new System.EventHandler(this.YuckChatControl1_Load);
             // 
             // lstMembers
             // 

@@ -106,7 +106,7 @@ namespace yuck
                 this.Width -= increment;
 
             if (!this.IsDisposed && !this.Disposing)
-                setLocationEfficiently(Screen.FromControl(this).Bounds.Size.Width - this.Width, 0);
+                setLocationEfficiently(Screen.FromControl(this).Bounds.Size.Width - this.Width, 20);
         }
 
         private void setLocationEfficiently(int x, int y)
@@ -141,7 +141,7 @@ namespace yuck
           //Console.WriteLine(String.Format("{0} ", delta));
 
             _mouse_down_x = e.Location.X;
-            setLocationEfficiently( this.Location.X - delta,  0);
+            setLocationEfficiently( this.Location.X - delta,  10);
 
         }
 

@@ -437,7 +437,7 @@ namespace yuck
         public Dictionary<string, string> presence = new Dictionary<string, string>();
 
         public Dictionary<string, List<string>> direct = new Dictionary<string, List<string>>();
-
+        public List<ChatMessage> chatMessages = new List<ChatMessage>();
 
         private string _next_batch = null;
 
@@ -561,6 +561,47 @@ namespace yuck
                     if (responseString.Contains("m.room.encrypted"))
                     {
 
+                    }
+
+
+
+                    foreach (KeyValuePair<string, MatrixSyncResultTimelineWrapper> messagesForRoomID in matrixSyncResult.rooms.join)
+                    {
+                        string roomID = messagesForRoomID.Key;
+                        Console.WriteLine("found message for room:" + roomID);
+
+                        MatrixSyncResultTimelineWrapper wrapper = messagesForRoomID.Value;
+                        foreach (MatrixSyncResultEvents events in wrapper.timeline.events)
+                        {
+
+                            if (events.content.msgtype == "m.text")
+                            {
+                                string message = "";
+                                if (events.content.format == "org.matrix.custom.html")
+                                {
+                                    //unencrypted
+                                    message = events.content.formatted_body;
+                                }
+                                else if (events.content.format == null)
+                                {
+                                    message = events.content.body;
+                                }
+                                ChatMessage chatMessage = new ChatMessage(roomID, events.sender, message);
+                                chatMessages.Add(chatMessage);
+                            }
+
+                            if (events.content.msgtype == "m.image")
+                            {
+
+                                MatrixMediaRequest matrixMediaRequest = new MatrixMediaRequest();
+                                matrixMediaRequest.filename = events.content.body;
+                                matrixMediaRequest.sender = events.sender;
+                                matrixMediaRequest.roomID = roomID;
+
+                                downloadMedia(matrixMediaRequest, MXC2HTTP(events.content.url));
+                            }
+                            //chat.processIncomingChatMessage(events.content.ciphertext);
+                        }
                     }
                 }
             }

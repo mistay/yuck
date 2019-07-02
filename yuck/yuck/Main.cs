@@ -57,7 +57,7 @@ namespace yuck
 
             Businesslogic.Instance.TypingEvent += TypingCompletedCallback;
 
-            (new Notification(10000, "title", "Message")).Show();
+            //(new Notification(10000, "title", "Message")).Show();
         }
 
         private void TypingCompletedCallback(List<string> user_ids)
@@ -224,6 +224,11 @@ namespace yuck
                     }
                 }
 
+
+
+
+
+
                 // show messages (in chat history) in openend room-windows
                 foreach (Form form in Application.OpenForms)
                 {
@@ -233,43 +238,14 @@ namespace yuck
                         Console.WriteLine(chat.MatrixRoom.roomID);
 
 
-                        foreach (KeyValuePair<string, MatrixSyncResultTimelineWrapper> messagesForRoomID in matrixSyncResult.rooms.join)
+                        foreach (ChatMessage chatMessage in Businesslogic.Instance.chatMessages)
                         {
-                            if (chat.MatrixRoom.roomID == messagesForRoomID.Key)
+                            if (chat.MatrixRoom.roomID == chatMessage.RoomID && !chatMessage.Displayed)
                             {
-                                Console.WriteLine("found message for room:" + chat.MatrixRoom.roomID);
-
-                                MatrixSyncResultTimelineWrapper wrapper = messagesForRoomID.Value;
-                                foreach (MatrixSyncResultEvents events in wrapper.timeline.events)
-                                {
-
-                                    if (events.content.msgtype == "m.text")
-                                    {
-                                        //unencrypted
-                                        if (events.content.format == "org.matrix.custom.html")
-                                        {
-                                            chat.processIncomingChatMessage(events.sender, events.content.formatted_body);
-                                        }
-                                        else
-                                        {
-                                            chat.processIncomingChatMessage(events.sender, events.content.body);
-                                        }
-                                    }
-
-                                    if (events.content.msgtype == "m.image")
-                                    {
-
-                                        MatrixMediaRequest matrixMediaRequest = new MatrixMediaRequest();
-                                        matrixMediaRequest.filename = events.content.body;
-                                        matrixMediaRequest.sender = events.sender;
-                                        matrixMediaRequest.roomID = chat.MatrixRoom.roomID;
-
-
-                                        Businesslogic.Instance.downloadMedia(matrixMediaRequest, Businesslogic.MXC2HTTP(events.content.url));
-
-                                    }
-                                    //chat.processIncomingChatMessage(events.content.ciphertext);
-                                }
+                                chatMessage.Displayed = true;
+                                Console.WriteLine(String.Format("displaying message from {0} for room {1}: {2}" , chatMessage.Sender, chat.MatrixRoom.roomID, chatMessage.Message));
+                                //unencrypted
+                                chat.processIncomingChatMessage(chatMessage.Sender, chatMessage.Message);
                             }
                         }
                     }
@@ -565,6 +541,12 @@ namespace yuck
         {
             _reallyQuit = true;
             Application.Exit();
+        }
+
+        private void ExitToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            _reallyQuit = true;
+            this.Close();
         }
     }
 }
