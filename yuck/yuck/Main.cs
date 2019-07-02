@@ -58,23 +58,28 @@ namespace yuck
             Businesslogic.Instance.TypingEvent += TypingCompletedCallback;
         }
 
-        private void TypingCompletedCallback(List<string> user_ids)
+        private Chat findOpenChatForm(string roomID)
         {
-            string status;
-            if (user_ids.Count == 0)
+            foreach (Form form in Application.OpenForms)
             {
-                status = "";
+                if (form is Chat)
+                {
+                    Chat chat = (Chat)form;
+                    if (chat.MatrixRoom.roomID == roomID)
+                    {
+                        return chat;
+                    }
+                }
             }
-            else if(user_ids.Count == 1)
-            {
-                status = String.Join(" ", user_ids) + " is typing...";
-            }
-            else
-            {
-                status = String.Join(" ", user_ids) + " are typing...";
-            }
+            return null;
+        }
 
-            tsStatuslabel.Text = status;
+        private void TypingCompletedCallback(string room_id, List<string> user_ids)
+        {
+            Chat chat = findOpenChatForm(room_id);
+            if (chat != null)
+                chat.UserTyping(user_ids);
+
 ;        }
 
         private void AvatarURLReceivedCallback(MatrixAvatarResult matrixAvatarResult)

@@ -211,18 +211,15 @@ namespace yuck
         }
 
 
-        public delegate void Typing(List<string> user_ids);
+        public delegate void Typing(string room_id, List<string> user_ids);
         public event Typing TypingEvent;
-        private void fireTypingEvent(List<string> user_ids)
+        private void fireTypingEvent(string room_id, List<string> user_ids)
         {
             if (TypingEvent != null)
             {
-                TypingEvent(user_ids);
+                TypingEvent(room_id, user_ids);
             }
         }
-
-
-
 
         internal async Task<MatrixLoginResult> UserTyping(string roomID, bool isTyping)
         {
@@ -511,6 +508,7 @@ namespace yuck
         public List<ChatMessage> chatMessages = new List<ChatMessage>();
 
         private string _next_batch = null;
+        public Dictionary<string, List<string>> UsersTyping = new Dictionary<string, List<string>>();
 
         public async Task<MatrixSyncResult> sync()
         {
@@ -560,10 +558,8 @@ namespace yuck
                                     }
                                     direct.Add(tmpUser, tmpRooms);
                                 }
-
                             }
                         }
-
                         fireRoomsDirectResolvedEvent();
                     }
 
@@ -571,7 +567,7 @@ namespace yuck
                     {
                         foreach (string s in d.Value)
                         {
-                            Console.WriteLine(String.Format("direct: {0} {1}", d.Key, s));
+                            //Console.WriteLine(String.Format("direct: {0} {1}", d.Key, s));
                         }
                     }
 
@@ -599,31 +595,20 @@ namespace yuck
                                 }
                             }
                         }
-                        if (presenceChanged.Count>0)
-                               fireUserPrecenseReceivedEvent(presenceChanged);
+                        if (presenceChanged.Count > 0)
+                            fireUserPrecenseReceivedEvent(presenceChanged);
                     }
-
 
 
                     foreach (KeyValuePair<string, MatrixSyncResultTimelineWrapper> wrapper in matrixSyncResult.rooms.join)
                     {
+                        string roomID = wrapper.Key;
+                        List<UserTypingInRoom> typingsRemoved = new List<UserTypingInRoom>();
                         foreach (MatrixSyncResultEphemeralEvents @event in wrapper.Value.ephemeral.events)
                         {
-                            if (@event.content.user_ids != null)
+                            if (@event.type == "m.typing")
                             {
-                                fireTypingEvent(@event.content.user_ids);
-
-                                if (@event.content.user_ids.Count == 0)
-                                {
-                                    Console.WriteLine("noone is typing...");
-                                }
-                                else
-                                {
-                                    foreach (string user_id in @event.content.user_ids)
-                                    {
-                                        Console.WriteLine("user: " + user_id + "is typing ...");
-                                    }
-                                }
+                                fireTypingEvent(roomID, @event.content.user_ids);
                             }
                         }
                     }

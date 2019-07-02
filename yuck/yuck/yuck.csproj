@@ -73,6 +73,7 @@
     </Compile>
     <Compile Include="ChatMessage.cs" />
     <Compile Include="ChatMessageImage.cs" />
+    <Compile Include="UserTypingInRoom.cs" />
     <Compile Include="MatrixRoomProperties.cs">
       <SubType>Form</SubType>
     </Compile>

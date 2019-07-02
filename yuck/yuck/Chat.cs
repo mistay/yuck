@@ -78,6 +78,14 @@ namespace yuck
             _isTyping = newstate;
         }
 
+        internal void UserTyping(List<string> user_ids)
+        {
+            if (user_ids.Count == 0)
+                tsStatusLabel.Text = "";
+            else
+                tsStatusLabel.Text = String.Join(", ", user_ids.ToArray()) + " " + (user_ids.Count == 1 ? "is" : "are") + " typing...";
+        }
+
         private void TxtMessage_KeyUp(object sender, KeyEventArgs e)
         {
             // via Form.AcceptButton proccessed
