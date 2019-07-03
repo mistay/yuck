@@ -56,6 +56,14 @@ namespace yuck
             Businesslogic.Instance.AvatarURLReceivedEvent += AvatarURLReceivedCallback;
 
             Businesslogic.Instance.TypingEvent += TypingCompletedCallback;
+
+            if (Properties.Settings.Default.mainform_height > 0)
+                this.Height = Properties.Settings.Default.mainform_height;
+
+            if (Properties.Settings.Default.mainform_width > 0)
+                this.Width = Properties.Settings.Default.mainform_width;
+
+            
         }
 
         private Chat findOpenChatForm(string roomID)
@@ -460,6 +468,8 @@ namespace yuck
 
         private void Main_Resize(object sender, EventArgs e)
         {
+
+
             if (this.WindowState == FormWindowState.Minimized)
             {
                 //Hide();
@@ -582,6 +592,13 @@ namespace yuck
         private void SettingsToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             (new Settings()).ShowDialog();
+        }
+
+        private void Main_ResizeEnd(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.mainform_width = this.Width;
+            Properties.Settings.Default.mainform_height = this.Height;
+            Properties.Settings.Default.Save();
         }
     }
 }

@@ -14,5 +14,11 @@
     <Setting Name="user_presence" Type="System.String" Scope="User">
       <Value Profile="(Default)">offline</Value>
     </Setting>
+    <Setting Name="mainform_width" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="mainform_height" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

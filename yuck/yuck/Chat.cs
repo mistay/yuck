@@ -22,6 +22,7 @@ namespace yuck
         public Chat(MatrixRoom matrixRoom) : this()
         {
             MatrixRoom = matrixRoom;
+            tsStatusLabel.Text = "";
         }
 
         private MatrixRoom _matrixroom;
