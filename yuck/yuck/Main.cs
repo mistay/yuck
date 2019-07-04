@@ -115,8 +115,21 @@ namespace yuck
 
         private void AvatarDownloadedCallback(Image image)
         {
-            pbAvatar.Image = image;
-            pbAvatar.SizeMode = PictureBoxSizeMode.Zoom;
+            // get ratio from original image to resize to picturebox width
+            float ratio = (float)image.Width / (float)image.Height;
+            int resizedWidth = pbAvatar.Width;
+            int resizedHeight = (int)(pbAvatar.Width / ratio);
+
+            // resize the image to the new format
+            Bitmap resizedImage = new Bitmap(resizedWidth, resizedHeight);
+            Graphics g = Graphics.FromImage((Image)resizedImage);
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
+            g.DrawImage(image, 0, 0, resizedWidth, resizedHeight);
+            g.Dispose();
+            pbAvatar.Image = resizedImage;
+
+            // Center the image to cut away everything except the face in the middle (assumption: face is in the middle of the picture)
+            pbAvatar.SizeMode = PictureBoxSizeMode.CenterImage;
         }
 
         private void WhoamiCallback(MatrixWhoamiResult matrixWhoamiResult)
