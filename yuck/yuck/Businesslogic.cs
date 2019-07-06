@@ -235,7 +235,7 @@ namespace yuck
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
 
             String template = @"
-                  ""typing"": ""{0}"",
+                  ""typing"": {0},
                   ""timeout"": 1000
                 ";
             String jsonLogin = String.Format(template, isTyping ? "true" : "false");
