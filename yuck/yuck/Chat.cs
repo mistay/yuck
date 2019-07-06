@@ -79,6 +79,11 @@ namespace yuck
             _isTyping = newstate;
         }
 
+        internal void UnreadNotifications(MatrixSyncUnreadNotifications matrixSyncUnreadNotifications)
+        {
+            tsStatusLabel.Text = "UnreadNotifications. highlight_count:" + matrixSyncUnreadNotifications.highlight_count + " notification_count:" + matrixSyncUnreadNotifications.notification_count;
+        }
+
         internal void UserTyping(List<string> user_ids)
         {
             if (user_ids.Count == 0)

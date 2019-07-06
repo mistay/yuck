@@ -59,6 +59,13 @@ namespace yuck
     {
         public MatrixSyncResultTimeline timeline { get; set; }
         public MatrixSyncResultEphemeral ephemeral { get; set; }
+        public MatrixSyncUnreadNotifications unread_notifications { get; set; }
+    }
+
+    public class MatrixSyncUnreadNotifications
+    {
+        public long notification_count { get; set; }
+        public long highlight_count { get; set; }
     }
 
     public class MatrixSyncResultTimeline

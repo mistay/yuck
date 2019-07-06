@@ -60,9 +60,7 @@ namespace yuck
         private void fireMembersLoaded(MatrixMemberResult matrixMemberResult)
         {
             if (MembersLoaded != null)
-            {
                 MembersLoaded(matrixMemberResult);
-            }
         }
 
         public delegate void joinedRoomyLoaded(MatrixJoinedRoomsResult matrixJoinedRoomsResult);
@@ -70,9 +68,7 @@ namespace yuck
         private void fireJoinedRoomyLoadedEvent(MatrixJoinedRoomsResult matrixJoinedRoomsResult)
         {
             if (JoinedRoomsLoadedEvent != null)
-            {
                 JoinedRoomsLoadedEvent(matrixJoinedRoomsResult);
-            }
         }
 
         internal static Uri MXC2HTTP(string mxc_url)
@@ -91,9 +87,7 @@ namespace yuck
         private void fireWhoamiEvent(MatrixWhoamiResult matrixWhoamiResult)
         {
             if (WhoamiEvent != null)
-            {
                 WhoamiEvent(matrixWhoamiResult);
-            }
         }
 
 
@@ -102,9 +96,7 @@ namespace yuck
         private void fireRoomResolvedEvent()
         {
             if (RoomResolvedEvent != null)
-            {
                 RoomResolvedEvent();
-            }
         }
 
 
@@ -113,9 +105,7 @@ namespace yuck
         private void fireLoginCompletedEvent()
         {
             if (LoginCompletedEvent != null)
-            {
                 LoginCompletedEvent();
-            }
         }
 
         public delegate void RoomsDirectResolved();
@@ -123,9 +113,7 @@ namespace yuck
         private void fireRoomsDirectResolvedEvent()
         {
             if (RoomsDirectResolvedEvent != null)
-            {
                 RoomsDirectResolvedEvent();
-            }
         }
 
         public delegate void MatrixUploadCompleted(MatrixUploadResult matrixUploadResult);
@@ -133,9 +121,7 @@ namespace yuck
         private void fireMatrixUploadCompletedEvent(MatrixUploadResult matrixUploadResult)
         {
             if (MatrixUploadCompletedEvent != null)
-            {
                 MatrixUploadCompletedEvent(matrixUploadResult);
-            }
         }
 
 
@@ -150,9 +136,7 @@ namespace yuck
         private void fireAvatarURLReceivedEvent(MatrixAvatarResult matrixAvatarResult)
         {
             if (AvatarURLReceivedEvent != null)
-            {
                 AvatarURLReceivedEvent(matrixAvatarResult);
-            }
         }
 
         public delegate void SyncCompleted(MatrixSyncResult matrixSyncResult, bool initSync);
@@ -160,9 +144,7 @@ namespace yuck
         private void fireSyncCompletedEvent(MatrixSyncResult matrixSyncResult, bool initSync)
         {
             if (SyncCompletedEvent != null)
-            {
                 SyncCompletedEvent(matrixSyncResult, initSync);
-            }
         }
 
         public delegate void UserPrecenseReceived(Dictionary<string, string> changed);
@@ -170,34 +152,23 @@ namespace yuck
         private void fireUserPrecenseReceivedEvent(Dictionary<string,string> changed)
         {
             if (UserPrecenseReceivedEvent != null)
-            {
                 UserPrecenseReceivedEvent(changed);
-            }
         }
-
-
-        
-
 
         public delegate void MessageCompleted(MatrixMessagesResult matrixMessagesResult);
         public event MessageCompleted MessageCompletedEvent;
         private void fireMessageCompletedEvent(MatrixMessagesResult matrixMessagesResult)
         {
             if (MessageCompletedEvent != null)
-            {
                 MessageCompletedEvent(matrixMessagesResult);
-            }
         }
-
 
         public delegate void MediadownloadCompleted(MatrixMediaRequest matrixMediaRequest, Image image);
         public event MediadownloadCompleted MediadownloadCompletedEvent;
         private void fireMediadownloadCompletedEvent(MatrixMediaRequest matrixMediaRequest, Image image)
         {
             if (MediadownloadCompletedEvent != null)
-            {
                 MediadownloadCompletedEvent(matrixMediaRequest, image);
-            }
         }
 
         public delegate void AvatarDownloadCompleted(Image image);
@@ -205,20 +176,23 @@ namespace yuck
         private void fireAvatarDownloadCompletedEvent(Image image)
         {
             if (AvatarDownloadCompletedEvent != null)
-            {
                 AvatarDownloadCompletedEvent(image);
-            }
         }
-
 
         public delegate void Typing(string room_id, List<string> user_ids);
         public event Typing TypingEvent;
         private void fireTypingEvent(string room_id, List<string> user_ids)
         {
             if (TypingEvent != null)
-            {
                 TypingEvent(room_id, user_ids);
-            }
+        }
+
+        public delegate void UnreadNotifications(string roomID, MatrixSyncUnreadNotifications matrixSyncUnreadNotifications);
+        public event UnreadNotifications UnreadNotificationsEvent;
+        private void fireUnreadNotificationsEvent(string roomID, MatrixSyncUnreadNotifications matrixSyncUnreadNotifications)
+        {
+            if (UnreadNotificationsEvent != null)
+                UnreadNotificationsEvent(roomID, matrixSyncUnreadNotifications);
         }
 
         public delegate void MessageRecieved(List<ReceiptEvent> receiptEvent);
@@ -226,9 +200,7 @@ namespace yuck
         private void fireMessageRecievedEvent(List<ReceiptEvent> receiptEvent)
         {
             if (MessageRecievedEvent != null)
-            {
                 MessageRecievedEvent(receiptEvent);
-            }
         }
 
         public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
@@ -315,7 +287,6 @@ namespace yuck
 
             return null;
         }
-
 
         public async Task downloadAvatarURLAsync(string user_id)
         {
@@ -621,6 +592,13 @@ namespace yuck
                     {
                         string roomID = wrapper.Key;
                         List<UserTypingInRoom> typingsRemoved = new List<UserTypingInRoom>();
+
+                        if (wrapper.Value.unread_notifications != null) 
+                        {
+                            MatrixSyncUnreadNotifications notifications = wrapper.Value.unread_notifications;
+                            fireUnreadNotificationsEvent(roomID, notifications);
+                        }
+
                         foreach (MatrixSyncResultEphemeralEvents @event in wrapper.Value.ephemeral.events)
                         {
                             if (@event.type == "m.typing")
@@ -678,6 +656,7 @@ namespace yuck
                                 fireMessageRecievedEvent(usersRecipients);
                             }
                         }
+
                     }
 
                     if (responseString.Contains("m.room.encrypted"))

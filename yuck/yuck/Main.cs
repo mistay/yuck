@@ -32,7 +32,7 @@ namespace yuck
         private void Form1_Load(object sender, EventArgs e)
         {
             Businesslogic.Instance.JoinedRoomsLoadedEvent += JoinedRoomsLoadedCallback;
-            Businesslogic.Instance.LoginCompletedEvent += LoginCompltedCallback;
+            Businesslogic.Instance.LoginCompletedEvent += LoginCompletedCallback;
 
             Businesslogic.Instance.RoomsDirectResolvedEvent += RoomsDirectResolvedCallback;
 
@@ -51,22 +51,24 @@ namespace yuck
             cbPresence.Text = Properties.Settings.Default.user_presence;
 
             Businesslogic.Instance.AvatarDownloadCompletedEvent += AvatarDownloadedCallback;
-
-            
             Businesslogic.Instance.AvatarURLReceivedEvent += AvatarURLReceivedCallback;
 
             Businesslogic.Instance.TypingEvent += TypingCompletedCallback;
-
             Businesslogic.Instance.MessageRecievedEvent += MessageReceivedCallback;
-
+            Businesslogic.Instance.UnreadNotificationsEvent += UnreadNotificationsCallback;
 
             if (Properties.Settings.Default.mainform_height > 0)
                 this.Height = Properties.Settings.Default.mainform_height;
 
             if (Properties.Settings.Default.mainform_width > 0)
                 this.Width = Properties.Settings.Default.mainform_width;
+        }
 
-            //(new Notification(1000, "foo", "aaa")).Show();
+        private void UnreadNotificationsCallback(string roomID, MatrixSyncUnreadNotifications matrixSyncUnreadNotifications)
+        {
+            Chat chat = findOpenChatForm(roomID);
+            if (chat != null)
+                chat.UnreadNotifications(matrixSyncUnreadNotifications);
         }
 
         private Chat findOpenChatForm(string roomID)
@@ -322,7 +324,7 @@ namespace yuck
             return timeout;
         }
 
-        public void LoginCompltedCallback()
+        public void LoginCompletedCallback()
         {
             presenceLoaded = false;
             tsStatuslabel.Text = "Login Completed";
