@@ -63,7 +63,7 @@ namespace yuck
             if (Properties.Settings.Default.mainform_width > 0)
                 this.Width = Properties.Settings.Default.mainform_width;
 
-            
+            //(new Notification(1000, "foo", "aaa")).Show();
         }
 
         private Chat findOpenChatForm(string roomID)

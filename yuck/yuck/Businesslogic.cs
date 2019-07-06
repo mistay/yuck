@@ -608,7 +608,18 @@ namespace yuck
                         {
                             if (@event.type == "m.typing")
                             {
-                                fireTypingEvent(roomID, @event.content.user_ids);
+                                List<string> filtered_users = new List<string>();
+                                // filter own typing events. user should now that she's/he's typing..
+                                foreach (string userid in @event.content.user_ids)
+                                {
+                                    if (loggedInUserID == userid)
+                                    {
+                                        continue;
+                                    }
+                                    filtered_users.Add(userid);
+                                }
+
+                                fireTypingEvent(roomID, filtered_users);
                             }
                         }
                     }
