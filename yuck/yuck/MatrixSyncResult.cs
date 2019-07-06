@@ -74,7 +74,8 @@ namespace yuck
     public class MatrixSyncResultEphemeralEvents
     {
         public string type { get; set; }
-        public MatrixSyncResultEphemeralContent content { get; set; }
+        public object content { get; set; }
+        //public MatrixSyncResultEphemeralContent content { get; set; }
     }
     public class MatrixSyncResultEvents
     {

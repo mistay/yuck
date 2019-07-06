@@ -221,6 +221,23 @@ namespace yuck
             }
         }
 
+        public delegate void MessageRecieved(List<ReceiptEvent> receiptEvent);
+        public event MessageRecieved MessageRecievedEvent;
+        private void fireMessageRecievedEvent(List<ReceiptEvent> receiptEvent)
+        {
+            if (MessageRecievedEvent != null)
+            {
+                MessageRecievedEvent(receiptEvent);
+            }
+        }
+
+        public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+        {
+            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            dtDateTime = dtDateTime.AddMilliseconds(unixTimeStamp).ToLocalTime();
+            return dtDateTime;
+        }
+
         internal async Task<MatrixLoginResult> UserTyping(string roomID, bool isTyping)
         {
             HttpClient client = new HttpClient();
@@ -610,16 +627,55 @@ namespace yuck
                             {
                                 List<string> filtered_users = new List<string>();
                                 // filter own typing events. user should now that she's/he's typing..
-                                foreach (string userid in @event.content.user_ids)
-                                {
-                                    if (loggedInUserID == userid)
-                                    {
-                                        continue;
-                                    }
-                                    filtered_users.Add(userid);
-                                }
 
+                                System.Collections.Generic.Dictionary<string, object> a = (Dictionary<string, object>)@event.content;
+                                foreach ( KeyValuePair<string,object> b in a)
+                                {
+                                    object[] c = (object[])b.Value;
+                                    foreach (object d in c)
+                                    {
+                                        string userid = d.ToString();
+                                        if (loggedInUserID == userid)
+                                        {
+                                            continue;
+                                        }
+                                        filtered_users.Add(userid);
+                                    }
+                                }
                                 fireTypingEvent(roomID, filtered_users);
+                                
+                            }
+
+                            if (@event.type == "m.receipt")
+                            {
+                                List<ReceiptEvent> usersRecipients = new List<ReceiptEvent>();
+
+                                System.Collections.Generic.Dictionary<string, object> a = (Dictionary<string, object>)@event.content;
+                                foreach (KeyValuePair<string, object> b in a)
+                                {
+                                    System.Collections.Generic.Dictionary<string, object> c = (Dictionary<string, object>)b.Value;
+                                    //string eventid = c.Key;
+
+                                    foreach (KeyValuePair<string, object> d in c ) {
+                                        if (d.Key == "m.read")
+                                        {
+                                            foreach (KeyValuePair<string, object> e in (System.Collections.Generic.Dictionary<string, object>)d.Value)
+                                            {
+                                                string user_id = e.Key;
+                                                foreach (KeyValuePair<string, object> fe in (System.Collections.Generic.Dictionary<string, object>)e.Value)
+                                                {
+                                                    if (fe.Key == "ts")
+                                                    {
+                                                        long ts = (long)fe.Value;
+                                                        usersRecipients.Add(new ReceiptEvent(roomID, user_id, ts));
+
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                fireMessageRecievedEvent(usersRecipients);
                             }
                         }
                     }

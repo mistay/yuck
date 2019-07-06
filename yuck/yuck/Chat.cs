@@ -105,6 +105,11 @@ namespace yuck
             Businesslogic.Instance.sendMessage(MatrixRoom.roomID, message);
         }
 
+        internal void MessageReceived(ReceiptEvent receiptEvent)
+        {
+            tsStatusLabel.Text = "Received " + receiptEvent.user_id + " " + Businesslogic.UnixTimeStampToDateTime(receiptEvent.ts).ToString();
+        }
+
         public void processIncomingChatMessageImage(string sender, string filename, Image image)
         {
             yuckChatControl1.AddImage(sender == Businesslogic.Instance.loggedInUserID, image, filename);

@@ -57,6 +57,9 @@ namespace yuck
 
             Businesslogic.Instance.TypingEvent += TypingCompletedCallback;
 
+            Businesslogic.Instance.MessageRecievedEvent += MessageReceivedCallback;
+
+
             if (Properties.Settings.Default.mainform_height > 0)
                 this.Height = Properties.Settings.Default.mainform_height;
 
@@ -87,8 +90,17 @@ namespace yuck
             Chat chat = findOpenChatForm(room_id);
             if (chat != null)
                 chat.UserTyping(user_ids);
+        }
 
-;        }
+        private void MessageReceivedCallback(List<ReceiptEvent> receiptEvents)
+        {
+            foreach (ReceiptEvent receiptEvent in receiptEvents)
+            {
+                Chat chat = findOpenChatForm(receiptEvent.roomID);
+                if (chat != null)
+                    chat.MessageReceived(receiptEvent);
+            }
+        }
 
         private void AvatarURLReceivedCallback(MatrixAvatarResult matrixAvatarResult)
         {
