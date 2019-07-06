@@ -79,10 +79,7 @@ namespace yuck
         }
         private void T_Tick(object sender, EventArgs e)
         {
-            if (direction == 0) {
-                return;
-
-            } else if (direction == 2 && (this.Width < 10))
+            if (direction == 2 && (this.Width < 10))
             {
                 shutdown();
             }
