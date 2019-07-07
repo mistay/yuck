@@ -505,7 +505,10 @@ namespace yuck
             HttpClient client = new HttpClient();
             MatrixSyncResult matrixSyncResult = null;
 
-            string uri = String.Format("https://{0}/_matrix/client/r0/sync?timeout=120000&access_token={1}{2}", Properties.Settings.Default.matrixserver_hostname, matrixResult.access_token, _next_batch == null ? "" : "&since=" + _next_batch);
+            // speedup "login": resolves room names more quickly after startup
+            int timeout = _next_batch == null ? 1000 : 12000;
+
+            string uri = String.Format("https://{0}/_matrix/client/r0/sync?timeout={1}&access_token={2}{3}", Properties.Settings.Default.matrixserver_hostname, timeout, matrixResult.access_token, _next_batch == null ? "" : "&since=" + _next_batch);
             Console.WriteLine("uri:" + uri);
 
             client.BaseAddress = new Uri(uri);
