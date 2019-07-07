@@ -515,7 +515,14 @@ namespace yuck
 
             try
             {
-                HttpResponseMessage response = await client.GetAsync(client.BaseAddress);
+                HttpResponseMessage response = null;
+                try
+                {
+                    response = await client.GetAsync(client.BaseAddress);
+                } catch (Exception ex)
+                {
+
+                }
                 Task<string> sss = response.Content.ReadAsStringAsync();
                 Console.WriteLine("/sync response status code:" + response.StatusCode);
                 if (response.IsSuccessStatusCode)

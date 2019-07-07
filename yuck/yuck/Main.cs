@@ -171,11 +171,11 @@ namespace yuck
                             message = "user went offline";
                             break;
                         default:
-                            message = "presence changed but dunno how. neither online nor offline.";
+                            message = "presence changed but dunno how. neither online nor offline. from server: " + c.Value;
                             break;
                     }
 
-                    Notification n = new Notification(1000, message, c.Key);
+                    Notification n = new Notification(3000, message, Businesslogic.MatrixUsernameToShortUsername(c.Key));
                     n.Audiofile = Properties.Resources.icq_knock;
                     n.Show();
                     //notifyIcon1.ShowBalloonTip(1000, message, c.Key, ToolTipIcon.Info);
