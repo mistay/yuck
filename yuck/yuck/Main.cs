@@ -311,11 +311,11 @@ namespace yuck
                 foreach (MatrixRoom m in lstRooms.Items)
                 {
                     string username = Tag.ToString();
-                    if (m.roomNameHumanReadable == Businesslogic.MatrixUsernameToShortUsername(username))
+                    
+                    // todo: maybe better to  match instances instead of string comparison. need concept!
+                    if (m.roomNameHumanReadable == username)
                     {
                         // found
-
-                        //todo: this will fail on usernames on different homeservers. todo: match full username instead of short username
                         matrixRoom = m;
                         break;
                     }
@@ -376,7 +376,6 @@ namespace yuck
                 }
             }
             refreshlstRoomsUpdate();
-
         }
 
         private void RoomResolvedCallback()
@@ -425,27 +424,6 @@ namespace yuck
                 lstRooms.Items.Add(matrixRoom);
 
                 Businesslogic.Instance.resolveRoomname(room);
-
-                /*
-                string found = null;
-                foreach (KeyValuePair<string, string> roomName in roomCache)
-                {
-                    if (roomName.Key == room)
-                    {
-                        // found
-                        found = roomName.Value;
-                        break;
-                    }
-                }
-
-                if (found != null)
-                {
-                    lstRooms.Items.Add(found);
-                }
-                else
-                {
-                    
-                }*/
             }
         }
 
