@@ -176,6 +176,8 @@ namespace yuck
                     }
 
                     Notification n = new Notification(3000, message, Businesslogic.MatrixUsernameToShortUsername(c.Key));
+                    n.NotificationClickedEvent += NotificationClickedCallback;
+                    n.Tag = c.Key; //todo: keep users in list of e.g. class MatrixUsers and lookup user. pass as instance 
                     n.Audiofile = Properties.Resources.icq_knock;
                     n.Show();
                     //notifyIcon1.ShowBalloonTip(1000, message, c.Key, ToolTipIcon.Info);
@@ -189,8 +191,6 @@ namespace yuck
                 lstUsers.Items.Add(presence.Key + ": " + presence.Value);
             }
         }
-
-        
 
         private void SyncCompletedCallback(MatrixSyncResult matrixSyncResult, bool initSync)
         {
@@ -297,14 +297,39 @@ namespace yuck
 
         private void NotificationClickedCallback(object Tag)
         {
+            MatrixRoom matrixRoom = null;
+
+
             if (Tag is MatrixRoom)
             {
-                MatrixRoom matrixRoom = (MatrixRoom)Tag;
+                matrixRoom = (MatrixRoom)Tag;
+            }
 
-                // todo: check if window already open. 
-                // really needed? should not be open as it raised notifiaction. an open-windowed room would not cause a notification.
-                Chat chat = new Chat(matrixRoom);
-                chat.Show();
+            if (Tag is string)
+            {
+                // assume this is a username, todo: pass as instance of e.g. MatrixUser (todo: create class)
+                foreach (MatrixRoom m in lstRooms.Items)
+                {
+                    string username = Tag.ToString();
+                    if (m.roomNameHumanReadable == Businesslogic.MatrixUsernameToShortUsername(username))
+                    {
+                        // found
+
+                        //todo: this will fail on usernames on different homeservers. todo: match full username instead of short username
+                        matrixRoom = m;
+                        break;
+                    }
+                }
+            }
+            if (matrixRoom != null)
+            {
+                Chat chat = findOpenChatForm(matrixRoom.roomID);
+                if (chat == null)
+                {
+                    // should not be necessary as we came here from notication that shouldn't have been raised as it should only be rased on closed chat windows
+                    chat = new Chat(matrixRoom);
+                    chat.Show();
+                }
                 chat.BringToFront();
             }
         }

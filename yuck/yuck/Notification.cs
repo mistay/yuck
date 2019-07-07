@@ -54,7 +54,6 @@ namespace yuck
             
         }
 
-
         public delegate void NotificationClicked(object Tag);
         public event NotificationClicked NotificationClickedEvent;
         private void fireNotificationClickedEvent()
@@ -64,7 +63,6 @@ namespace yuck
                 NotificationClickedEvent(Tag);
             }
         }
-
 
         private void shutdown()
         {
@@ -77,6 +75,7 @@ namespace yuck
             _brushedaside = true;
             direction = 2;
         }
+
         private void T_Tick(object sender, EventArgs e)
         {
             if (direction == 2 && (this.Width < 10))
@@ -132,7 +131,6 @@ namespace yuck
 
         private void Notification_MouseMove(object sender, MouseEventArgs e)
         {
-
             if (_mouse_down_x == 0)
                 // start acting after mouse down
                 return;
@@ -148,7 +146,7 @@ namespace yuck
 
         private void Notification_MouseUp(object sender, MouseEventArgs e)
         {
-            Console.WriteLine("direct: " + direction);
+            Console.WriteLine("direction: " + direction);
 
             _mouse_down_x = 0;
             if (this.Width<MAX_NOTIFICATION_WIDTH)
