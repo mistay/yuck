@@ -171,6 +171,19 @@ namespace yuck
                 MediadownloadCompletedEvent(matrixMediaRequest, image);
         }
 
+
+        public delegate void RoomAvatarDownloaded(MatrixMediaRequest matrixMediaRequest, Image image);
+        public event RoomAvatarDownloaded RoomAvatarDownloadedEvent;
+        private void fireRoomAvatarDownloadedEvent(MatrixMediaRequest matrixMediaRequest, Image image)
+        {
+            if (RoomAvatarDownloadedEvent != null)
+                RoomAvatarDownloadedEvent(matrixMediaRequest, image);
+        }
+
+
+        
+
+
         public delegate void AvatarDownloadCompleted(Image image);
         public event AvatarDownloadCompleted AvatarDownloadCompletedEvent;
         private void fireAvatarDownloadCompletedEvent(Image image)
@@ -255,10 +268,58 @@ namespace yuck
             return null;
         }
 
+        public async Task<object> resolveRoomAvatar(string roomID)
+        {
+            HttpClient client = new HttpClient();
+            MatrixRoomAvatarResolvedResult matrixRoomAvatarResolvedResult = null;
+
+            string uri = String.Format("https://{0}/_matrix/client/r0/rooms/{1}/state/m.room.avatar?access_token={2}", Properties.Settings.Default.matrixserver_hostname, roomID, matrixResult.access_token);
+            client.BaseAddress = new Uri(uri);
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync(client.BaseAddress);
+                Task<string> sss = response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = response.Content.ReadAsStringAsync().Result;
+
+                    matrixRoomAvatarResolvedResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixRoomAvatarResolvedResult>(responseString);
+
+                    if (matrixRoomAvatarResolvedResult.url!=null)
+                    {
+                        //Uri uri = MXC2HTTP(matrixRoomAvatarResolvedResult.url);
+
+
+                        MatrixMediaRequest matrixImageRequest = new MatrixMediaRequest();
+                        matrixImageRequest.mediaType = MatrixMediaRequest.Mediatypes.ROOM_AVATAR;
+                        matrixImageRequest.roomID = roomID;
+
+                        Console.WriteLine("downloading avatar for room " + roomID);
+                        downloadMedia(matrixImageRequest, matrixRoomAvatarResolvedResult.url);
+
+
+
+                    }
+                    //roomCache.Add(roomID, matrixRoomAvatarResolvedResult.name);
+                    //fireRoomAvatarResolvedEvent();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("could not resolveRoomnameAwait(): " + e.Message);
+            }
+
+            return null;
+        }
+
         public async Task<object> resolveRoomname(string roomID)
         {
             HttpClient client = new HttpClient();
-            MatrixRoomResolvedResult matrixRoomResolvedResult = null;
+            MatrixRoomNameResolvedResult matrixRoomResolvedResult = null;
 
             string uri = String.Format("https://{0}/_matrix/client/r0/rooms/{1}/state/m.room.name?access_token={2}", Properties.Settings.Default.matrixserver_hostname, roomID, matrixResult.access_token);
             client.BaseAddress = new Uri(uri);
@@ -274,7 +335,7 @@ namespace yuck
                 {
                     string responseString = response.Content.ReadAsStringAsync().Result;
 
-                    matrixRoomResolvedResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixRoomResolvedResult>(responseString);
+                    matrixRoomResolvedResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixRoomNameResolvedResult>(responseString);
                     roomCache.Add(roomID, matrixRoomResolvedResult.name);
 
                     fireRoomResolvedEvent();
@@ -324,7 +385,7 @@ namespace yuck
             return null;
         }
 
-        internal async Task<Image> downloadMedia(MatrixMediaRequest matrixImageRequest,  string mxcurl)
+        internal async Task<Image> downloadMedia(MatrixMediaRequest matrixImageRequest, string mxcurl)
         {
             HttpClient client = new HttpClient();
 
@@ -347,7 +408,12 @@ namespace yuck
                     s.Seek(0, SeekOrigin.Begin);
                     Image i = Image.FromStream(s);
 
-                    appendImageToChatmessages(mxcurl, i);
+                    if (matrixImageRequest.mediaType == MatrixMediaRequest.Mediatypes.CHAT_MESSAGE_IMAGE)
+                        appendImageToChatmessages(mxcurl, i);
+
+                    if (matrixImageRequest.mediaType == MatrixMediaRequest.Mediatypes.ROOM_AVATAR)
+                        fireRoomAvatarDownloadedEvent(matrixImageRequest, i);
+
 
                     fireMediadownloadCompletedEvent(matrixImageRequest, i);
                 }
@@ -401,7 +467,7 @@ namespace yuck
             }
             catch (Exception e)
             {
-                Console.WriteLine("could not downloadMediaAwait(): " + e.Message);
+                Console.WriteLine("could not downloadAvatar(): " + e.Message);
             }
             return null;
         }
@@ -700,6 +766,7 @@ namespace yuck
                                 chatMessage = new ChatMessage(roomID, events.sender, message);
                             } else if (events.content.msgtype == "m.image") {
                                 MatrixMediaRequest matrixMediaRequest = new MatrixMediaRequest();
+                                matrixMediaRequest.mediaType = MatrixMediaRequest.Mediatypes.CHAT_MESSAGE_IMAGE;
                                 matrixMediaRequest.filename = events.content.body;
                                 matrixMediaRequest.sender = events.sender;
                                 matrixMediaRequest.roomID = roomID;

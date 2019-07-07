@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace yuck
 {
-    public class MatrixRoomResolvedResult
+    public class MatrixRoomNameResolvedResult
     {
         public string name { get; set; }
     }

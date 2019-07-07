@@ -57,11 +57,21 @@ namespace yuck
             Businesslogic.Instance.MessageRecievedEvent += MessageReceivedCallback;
             Businesslogic.Instance.UnreadNotificationsEvent += UnreadNotificationsCallback;
 
+            Businesslogic.Instance.RoomAvatarDownloadedEvent += RoomAvatarDownloadedCallback;
+
             if (Properties.Settings.Default.mainform_height > 0)
                 this.Height = Properties.Settings.Default.mainform_height;
 
             if (Properties.Settings.Default.mainform_width > 0)
                 this.Width = Properties.Settings.Default.mainform_width;
+        }
+
+        private void RoomAvatarDownloadedCallback(MatrixMediaRequest matrixMediaRequest, Image image)
+        {
+            foreach (MatrixRoom matrixRoom in listView1.Items)
+            {
+                matrixRoom.avatar = image;
+            }
         }
 
         private void UnreadNotificationsCallback(string roomID, MatrixSyncUnreadNotifications matrixSyncUnreadNotifications)
@@ -248,7 +258,7 @@ namespace yuck
                             Notification n = new Notification(timeout, sender, message);
 
                             // todo: loop through matrixrooms in businesslogic and resolve there. note: Businesslogic.Instance.roomCache does not contain MatrixRooms
-                            foreach (MatrixRoom m in lstRooms.Items)
+                            foreach (MatrixRoom m in listView1.Items)
                             {
                                 if (m.roomID == roomID)
                                 {
@@ -308,7 +318,7 @@ namespace yuck
             if (Tag is string)
             {
                 // assume this is a username, todo: pass as instance of e.g. MatrixUser (todo: create class)
-                foreach (MatrixRoom m in lstRooms.Items)
+                foreach (MatrixRoom m in listView1.Items)
                 {
                     string username = Tag.ToString();
                     
@@ -360,7 +370,7 @@ namespace yuck
 
         private void RoomsDirectResolvedCallback()
         {
-            foreach (MatrixRoom matrixRoom in lstRooms.Items)
+            foreach (MatrixRoom matrixRoom in listView1.Items)
             {
                 foreach (KeyValuePair<string, List<string>> d in Businesslogic.Instance.direct)
                 {
@@ -383,7 +393,7 @@ namespace yuck
             Console.WriteLine("RoomResolvedCallback()");
             foreach (KeyValuePair<string, string> cacheEntry in Businesslogic.Instance.roomCache)
             {
-                foreach (MatrixRoom entry in lstRooms.Items)
+                foreach (MatrixRoom entry in listView1.Items)
                 {
                     if (entry.roomID == cacheEntry.Key)
                     {
@@ -402,9 +412,9 @@ namespace yuck
         private void refreshlstRoomsUpdate()
         {
             //https://stackoverflow.com/questions/33175381/how-we-can-refresh-items-text-in-listbox-without-reinserting-it
-            for (int i = 0; i < lstRooms.Items.Count; i++)
+            for (int i = 0; i < listView1.Items.Count; i++)
             {
-                lstRooms.Items[i] = lstRooms.Items[i];
+                listView1.Items[i] = listView1.Items[i];
             }
         }
 
@@ -412,7 +422,7 @@ namespace yuck
 
         private void JoinedRoomsLoadedCallback(MatrixJoinedRoomsResult matrixJoinedRoomsResult)
         {
-            lstRooms.Items.Clear();
+            listView1.Items.Clear();
 
             foreach (string room in matrixJoinedRoomsResult.joined_rooms)
             {
@@ -421,9 +431,13 @@ namespace yuck
                 MatrixRoom matrixRoom = new MatrixRoom();
                 matrixRoom.roomID = room;
 
-                lstRooms.Items.Add(matrixRoom);
+                listView1.Items.Add(matrixRoom);
 
                 Businesslogic.Instance.resolveRoomname(room);
+                Businesslogic.Instance.resolveRoomAvatar(room);
+
+                //Businesslogic.Instance.downloadAvatar(matrixRoom.avatarUri);
+
             }
         }
 
@@ -447,7 +461,7 @@ namespace yuck
 
         private void ListBox1_DoubleClick(object sender, EventArgs e)
         {
-            openChatWindow(((MatrixRoom)lstRooms.SelectedItem));
+            openChatWindow(((MatrixRoom)listView1.SelectedItem));
         }
 
         private void openChatWindow(MatrixRoom matrixRoom)
@@ -482,7 +496,7 @@ namespace yuck
 
         private void LstRooms_DoubleClick(object sender, EventArgs e)
         {
-            openChatWindow(((MatrixRoom)lstRooms.SelectedItem));
+            openChatWindow(((MatrixRoom)listView1.SelectedItem));
         }
 
         private void LstRooms_SelectedIndexChanged(object sender, EventArgs e)
@@ -493,7 +507,7 @@ namespace yuck
         private void LstRooms_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-                openChatWindow((MatrixRoom)lstRooms.SelectedItem);
+                openChatWindow((MatrixRoom)listView1.SelectedItem);
         }
 
         private void Main_Resize(object sender, EventArgs e)
@@ -564,8 +578,8 @@ namespace yuck
         {
             if (e.Button == MouseButtons.Right)
             {
-                int index = lstRooms.IndexFromPoint(e.Location);
-                MatrixRoom matrixroom = (MatrixRoom)lstRooms.Items[index];
+                int index = listView1.IndexFromPoint(e.Location);
+                MatrixRoom matrixroom = (MatrixRoom)listView1.Items[index];
                 Console.WriteLine(matrixroom.roomID);
 
                 MatrixRoomProperties matrixRoomProperties =new MatrixRoomProperties();

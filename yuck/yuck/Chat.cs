@@ -26,7 +26,20 @@ namespace yuck
         }
 
         private MatrixRoom _matrixroom;
-        internal MatrixRoom MatrixRoom { get { return _matrixroom; } set { if (value == null) return; _matrixroom = value; this.Text = "" + _matrixroom.ToString(); init(); } }
+        internal MatrixRoom MatrixRoom {
+            get { return _matrixroom; }
+            set {
+                if (value == null) return;
+                _matrixroom = value;
+                this.Text = "" + _matrixroom.ToString(); init();
+                if (_matrixroom.avatar != null)
+                {
+                    Bitmap bitmap = new Bitmap(_matrixroom.avatar);
+                    bitmap.SetResolution(72, 72);
+                    this.Icon = System.Drawing.Icon.FromHandle(bitmap.GetHicon());
+                }
+            }
+        }
 
         private void init()
         {
@@ -44,7 +57,7 @@ namespace yuck
             if (_matrixroom.directRoom)
             {
                 splitContainer1.Panel2Collapsed = true;
-            } 
+            }
         }
         private void Chat_Load(object sender, EventArgs e)
         {

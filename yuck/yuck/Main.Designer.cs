@@ -45,7 +45,6 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.lstRooms = new System.Windows.Forms.ListBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.pbAvatar = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
@@ -57,6 +56,7 @@
             this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.asdfToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lstRooms = new System.Windows.Forms.ListBox();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -212,22 +212,6 @@
             this.label1.TabIndex = 12;
             this.label1.Text = "Rooms";
             // 
-            // lstRooms
-            // 
-            this.lstRooms.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lstRooms.FormattingEnabled = true;
-            this.lstRooms.ItemHeight = 16;
-            this.lstRooms.Location = new System.Drawing.Point(3, 102);
-            this.lstRooms.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.lstRooms.Name = "lstRooms";
-            this.lstRooms.Size = new System.Drawing.Size(295, 116);
-            this.lstRooms.TabIndex = 9;
-            this.lstRooms.MouseClick += new System.Windows.Forms.MouseEventHandler(this.LstRooms_MouseClick);
-            this.lstRooms.SelectedIndexChanged += new System.EventHandler(this.LstRooms_SelectedIndexChanged);
-            this.lstRooms.DoubleClick += new System.EventHandler(this.LstRooms_DoubleClick);
-            this.lstRooms.KeyUp += new System.Windows.Forms.KeyEventHandler(this.LstRooms_KeyUp);
-            this.lstRooms.MouseUp += new System.Windows.Forms.MouseEventHandler(this.LstRooms_MouseUp);
-            // 
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.ColumnCount = 3;
@@ -341,6 +325,22 @@
             this.asdfToolStripMenuItem.Size = new System.Drawing.Size(49, 24);
             this.asdfToolStripMenuItem.Text = "asdf";
             // 
+            // lstRooms
+            // 
+            this.lstRooms.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lstRooms.FormattingEnabled = true;
+            this.lstRooms.ItemHeight = 16;
+            this.lstRooms.Location = new System.Drawing.Point(3, 102);
+            this.lstRooms.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.lstRooms.Name = "lstRooms";
+            this.lstRooms.Size = new System.Drawing.Size(295, 116);
+            this.lstRooms.TabIndex = 9;
+            this.lstRooms.MouseClick += new System.Windows.Forms.MouseEventHandler(this.LstRooms_MouseClick);
+            this.lstRooms.SelectedIndexChanged += new System.EventHandler(this.LstRooms_SelectedIndexChanged);
+            this.lstRooms.DoubleClick += new System.EventHandler(this.LstRooms_DoubleClick);
+            this.lstRooms.KeyUp += new System.Windows.Forms.KeyEventHandler(this.LstRooms_KeyUp);
+            this.lstRooms.MouseUp += new System.Windows.Forms.MouseEventHandler(this.LstRooms_MouseUp);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -382,7 +382,6 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ListBox lstRooms;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel tsstatus;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
@@ -401,6 +400,7 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripStatusLabel tsStatuslabel;
+        private System.Windows.Forms.ListBox lstRooms;
     }
 }
 
