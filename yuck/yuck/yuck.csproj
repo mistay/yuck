@@ -93,7 +93,7 @@
     <Compile Include="Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
-    <Compile Include="MatrixRoomResolved.cs" />
+    <Compile Include="MatrixRoomNameResolved.cs" />
     <Compile Include="MatrixMessageResult.cs" />
     <Compile Include="MatrixWhoamiResult.cs" />
     <Compile Include="MatrixSyncResult.cs" />
