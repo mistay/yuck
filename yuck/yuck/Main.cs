@@ -69,6 +69,7 @@ namespace yuck
             il.ImageSize = new Size(20, 20);
             lvRooms.SmallImageList = il;
             lvRooms.View = View.Details;
+            lvRooms.FullRowSelect = true;
             lvRooms.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             lvRooms.Columns.Add("foo");
             lvRooms.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
