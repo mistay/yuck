@@ -60,6 +60,8 @@ namespace yuck
         public MatrixSyncResultTimeline timeline { get; set; }
         public MatrixSyncResultEphemeral ephemeral { get; set; }
         public MatrixSyncUnreadNotifications unread_notifications { get; set; }
+        public MatrixSyncResultState state { get; set; }
+
     }
 
     public class MatrixSyncUnreadNotifications
@@ -84,6 +86,26 @@ namespace yuck
         public object content { get; set; }
         //public MatrixSyncResultEphemeralContent content { get; set; }
     }
+    public class MatrixSyncResultState
+    {
+        public List<MatrixSyncResultStateEvents> events { get; set; }
+    }
+
+    public class MatrixSyncResultStateEvents
+    {
+        public string type { get; set; }
+        public string sender { get; set; }
+        public MatrixSyncResultStateContent content { get; set; }
+        public string event_id { get; set; }
+        public long origin_server_ts { get; set; }
+    }
+    public class MatrixSyncResultStateContent
+    {
+        public string membership { get; set; }
+        public string displayname { get; set; }
+        public string avatar_url { get; set; }
+    }
+
     public class MatrixSyncResultEvents
     {
         public string type { get; set; }

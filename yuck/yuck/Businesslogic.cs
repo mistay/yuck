@@ -23,7 +23,10 @@ namespace yuck
 
         private Businesslogic()
         {
+            this.AvatarUrlExtractedEvent += AvatarUrlExtractedEventCallback;
         }
+
+       
 
         public static Businesslogic Instance
         {
@@ -108,6 +111,16 @@ namespace yuck
                 LoginCompletedEvent();
         }
 
+        
+
+        public delegate void AvatarUrlExtracted(string user_id, Uri url);
+        public event AvatarUrlExtracted AvatarUrlExtractedEvent;
+        private void fireAvatarUrlExtractedEvent(string user_id, Uri url)
+        {
+            if (AvatarUrlExtractedEvent != null)
+                AvatarUrlExtractedEvent(user_id, url);
+        }
+
         public delegate void RoomsDirectResolved();
         public event RoomsDirectResolved RoomsDirectResolvedEvent;
         private void fireRoomsDirectResolvedEvent()
@@ -184,12 +197,12 @@ namespace yuck
         
 
 
-        public delegate void AvatarDownloadCompleted(Image image);
+        public delegate void AvatarDownloadCompleted(Image image, string user_id);
         public event AvatarDownloadCompleted AvatarDownloadCompletedEvent;
-        private void fireAvatarDownloadCompletedEvent(Image image)
+        private void fireAvatarDownloadCompletedEvent(Image image, string user_id)
         {
             if (AvatarDownloadCompletedEvent != null)
-                AvatarDownloadCompletedEvent(image);
+                AvatarDownloadCompletedEvent(image, user_id);
         }
 
         public delegate void Typing(string room_id, List<string> user_ids);
@@ -221,6 +234,12 @@ namespace yuck
             System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddMilliseconds(unixTimeStamp).ToLocalTime();
             return dtDateTime;
+        }
+
+        private void AvatarUrlExtractedEventCallback(string user_id, Uri url)
+        {
+            Console.WriteLine("AvatarUrlExtractedEventCallback() user_id: " + user_id + " url: " + url.ToString());
+            downloadAvatar(url, user_id);
         }
 
         internal async Task<MatrixLoginResult> UserTyping(string roomID, bool isTyping)
@@ -348,16 +367,12 @@ namespace yuck
             return null;
         }
 
-        public async Task downloadAvatarURLAsync(string user_id)
-        {
-            await downloadAvatarURLAwait(user_id);
-        }
-        internal async Task<MatrixAvatarResult> downloadAvatarURLAwait(string user_id)
+        public async Task<MatrixAvatarResult> getAvatarURLForUser(string user_id)
         {
             HttpClient client = new HttpClient();
             MatrixAvatarResult matrixAvatarResult;
 
-            string uri = String.Format("https://{0}/_matrix/client/r0/profile/{1}/avatar_url", Properties.Settings.Default.matrixserver_hostname,  (user_id));
+            string uri = String.Format("https://{0}/_matrix/client/r0/profile/{1}/avatar_url", Properties.Settings.Default.matrixserver_hostname, user_id);
             client.BaseAddress = new Uri(uri);
             client.DefaultRequestHeaders
                   .Accept
@@ -378,7 +393,7 @@ namespace yuck
             }
             catch (Exception e)
             {
-                Console.WriteLine("could not downloadAvatarURLAwait(): " + e.Message);
+                Console.WriteLine("could not getAvatarURLForUser(): " + e.Message);
             }
 
             return null;
@@ -441,7 +456,7 @@ namespace yuck
             }
         }
 
-        internal async Task<Image> downloadAvatar(Uri uri)
+        internal async Task<Image> downloadAvatar(Uri uri, string user_id)
         {
             HttpClient client = new HttpClient();
             //string uri = String.Format("https://{0}/_matrix/media/r0/download/st0ne.net/wEmUPhSlPdqDNlBHxlBAHAVx", Properties.Settings.Default.matrixserver_hostname);
@@ -461,7 +476,7 @@ namespace yuck
                     s.Seek(0, SeekOrigin.Begin);
                     Image i = Image.FromStream(s);
 
-                    fireAvatarDownloadCompletedEvent(i);
+                    fireAvatarDownloadCompletedEvent(i, user_id);
                 }
             }
             catch (Exception e)
@@ -600,6 +615,23 @@ namespace yuck
 
                     matrixSyncResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixSyncResult>(responseString);
                     _next_batch = matrixSyncResult.next_batch;
+
+
+                    foreach (KeyValuePair<string, MatrixSyncResultTimelineWrapper> a in matrixSyncResult.rooms.join)
+                    {
+                        string roomID = a.Key;
+                        foreach (MatrixSyncResultStateEvents @event in a.Value.state.events)
+                        {
+                            if (@event.type == "m.room.member")
+                            {
+                                Uri avatar_url = MXC2HTTP(@event.content.avatar_url);
+                                string user_id = @event.sender;
+
+                                if (avatar_url != null)
+                                    fireAvatarUrlExtractedEvent(user_id, avatar_url);
+                            }
+                        }
+                    }
 
 
                     if (matrixSyncResult.account_data.events != null)

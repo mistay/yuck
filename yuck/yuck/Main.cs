@@ -163,11 +163,11 @@ namespace yuck
             }
             else
             {
-                Businesslogic.Instance.downloadAvatar(uri);
+                Businesslogic.Instance.downloadAvatar(uri, null);
             }
         }
 
-        private void AvatarDownloadedCallback(Image image)
+        private void AvatarDownloadedCallback(Image image, string user_id)
         {
             // get ratio from original image to resize to picturebox width
             float ratio = (float)image.Width / (float)image.Height;
@@ -180,17 +180,37 @@ namespace yuck
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
             g.DrawImage(image, 0, 0, resizedWidth, resizedHeight);
             g.Dispose();
-            pbAvatar.Image = resizedImage;
 
-            // Center the image to cut away everything except the face in the middle (assumption: face is in the middle of the picture)
-            pbAvatar.SizeMode = PictureBoxSizeMode.CenterImage;
+            // display avatar bitmap in main gui
+            if (user_id == Businesslogic.Instance.loggedInUserID)
+            {
+                pbAvatar.Image = resizedImage;
+
+                // Center the image to cut away everything except the face in the middle (assumption: face is in the middle of the picture)
+                pbAvatar.SizeMode = PictureBoxSizeMode.CenterImage;
+            }
+
+            foreach (MatrixRoom matrixRoom in matrixRooms)
+            {
+                if (matrixRoom.roomNameHumanReadable == user_id)
+                {
+                    // cache avatar
+                    matrixRoom.avatar = image;
+
+                    // display avatar in rooms list
+                    il.Images.Add(matrixRoom.roomID, image);
+                    refreshlstRoomsUpdate();
+
+                    break;
+                }
+            }
         }
 
         private void WhoamiCallback(MatrixWhoamiResult matrixWhoamiResult)
         {
             lblUsername.Text = matrixWhoamiResult.user_id;
 
-            Businesslogic.Instance.downloadAvatarURLAsync(matrixWhoamiResult.user_id);
+            Businesslogic.Instance.getAvatarURLForUser(matrixWhoamiResult.user_id);
 
         }
 
@@ -383,8 +403,8 @@ namespace yuck
 
             int timeout = (int)(((float)numWords / (float)words_per_minute) * 60 * 1000);
 
-            if (timeout < 1000) timeout = 1000; //minimum display time: it's prette uncomfortable to display messages no longer than this time
-            if (timeout > 30000) timeout = 30000; // maximum display time
+            if (timeout < 1000) timeout = 2000; //minimum display time: it's prette uncomfortable to display messages no longer than this time
+            if (timeout > 30000) timeout = 40000; // maximum display time
 
             return timeout;
         }
@@ -408,9 +428,13 @@ namespace yuck
                     {
                         if (roomID == matrixRoom.roomID)
                         {
-                            Console.WriteLine("resolved room: " + d.Key);
+                            Console.WriteLine("resolved room (direct contact): " + d.Key);
                             matrixRoom.roomNameHumanReadable = d.Key;
                             matrixRoom.directRoom = true;
+
+
+                            //Businesslogic.Instance.downloadAvatar(uri)
+                            //Businesslogic.Instance.avatar .downloadAvatar(uri);
                         }
                     }
                 }
@@ -424,7 +448,7 @@ namespace yuck
                     {
                         if (roomID == lvRooms.Items[i].ImageKey)
                         {
-                            Console.WriteLine("resolved room: " + d.Key);
+                            Console.WriteLine("resolved room (direct contact): " + d.Key);
                             lvRooms.Items[i].Text = Businesslogic.MatrixUsernameToShortUsername(d.Key); // resolved name, e.g. "armin"
                         }
                     }
@@ -438,13 +462,14 @@ namespace yuck
             Console.WriteLine("RoomResolvedCallback()");
             foreach (KeyValuePair<string, string> cacheEntry in Businesslogic.Instance.roomCache)
             {
+                Console.WriteLine("RoomResolvedCallback() roomCache: " + cacheEntry.Key + " " + cacheEntry.Value);
                 foreach (MatrixRoom entry in matrixRooms)
                 {
                     if (entry.roomID == cacheEntry.Key)
                     {
-                        Console.WriteLine("RoomResolvedCallback() entry.roomID: " + entry.roomID + " roomNameHumanReadable: " + cacheEntry.Value);
-
                         // found
+                        //Console.WriteLine("RoomResolvedCallback() entry.roomID: " + entry.roomID + " roomNameHumanReadable: " + cacheEntry.Value);
+
                         entry.roomNameHumanReadable = cacheEntry.Value;
                         entry.directRoom = false;
                         break;
@@ -455,10 +480,10 @@ namespace yuck
                 {
                     if (i.ImageKey == cacheEntry.Key)
                     {
-                        Console.WriteLine("RoomResolvedCallback() entry.roomID: " + i.ImageKey + " roomNameHumanReadable: " + cacheEntry.Value);
+                        // found
+                        //Console.WriteLine("RoomResolvedCallback() entry.roomID: " + i.ImageKey + " roomNameHumanReadable: " + cacheEntry.Value);
 
                         i.Text = cacheEntry.Value;
-                        // found
                         break;
                     }
                 }
@@ -468,6 +493,7 @@ namespace yuck
 
         private void refreshlstRoomsUpdate()
         {
+            
             for (int i = 0; i < lvRooms.Items.Count; i++)
             {
                 lvRooms.Items[i] = lvRooms.Items[i];
