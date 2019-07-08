@@ -274,6 +274,9 @@ namespace yuck
             MatrixRoomAvatarResolvedResult matrixRoomAvatarResolvedResult = null;
 
             string uri = String.Format("https://{0}/_matrix/client/r0/rooms/{1}/state/m.room.avatar?access_token={2}", Properties.Settings.Default.matrixserver_hostname, roomID, matrixResult.access_token);
+
+            Console.WriteLine("downloading avatar for room " + uri);
+
             client.BaseAddress = new Uri(uri);
             client.DefaultRequestHeaders
                   .Accept
@@ -289,20 +292,16 @@ namespace yuck
 
                     matrixRoomAvatarResolvedResult = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<MatrixRoomAvatarResolvedResult>(responseString);
 
+
                     if (matrixRoomAvatarResolvedResult.url!=null)
                     {
                         //Uri uri = MXC2HTTP(matrixRoomAvatarResolvedResult.url);
-
 
                         MatrixMediaRequest matrixImageRequest = new MatrixMediaRequest();
                         matrixImageRequest.mediaType = MatrixMediaRequest.Mediatypes.ROOM_AVATAR;
                         matrixImageRequest.roomID = roomID;
 
-                        Console.WriteLine("downloading avatar for room " + roomID);
                         downloadMedia(matrixImageRequest, matrixRoomAvatarResolvedResult.url);
-
-
-
                     }
                     //roomCache.Add(roomID, matrixRoomAvatarResolvedResult.name);
                     //fireRoomAvatarResolvedEvent();

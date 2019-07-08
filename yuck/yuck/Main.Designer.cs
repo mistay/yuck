@@ -56,7 +56,7 @@
             this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.asdfToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.lstRooms = new System.Windows.Forms.ListBox();
+            this.lvRooms = new System.Windows.Forms.ListView();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -123,14 +123,14 @@
             // settingsToolStripMenuItem1
             // 
             this.settingsToolStripMenuItem1.Name = "settingsToolStripMenuItem1";
-            this.settingsToolStripMenuItem1.Size = new System.Drawing.Size(154, 26);
+            this.settingsToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
             this.settingsToolStripMenuItem1.Text = "&Settings...";
             this.settingsToolStripMenuItem1.Click += new System.EventHandler(this.SettingsToolStripMenuItem1_Click);
             // 
             // exitToolStripMenuItem2
             // 
             this.exitToolStripMenuItem2.Name = "exitToolStripMenuItem2";
-            this.exitToolStripMenuItem2.Size = new System.Drawing.Size(154, 26);
+            this.exitToolStripMenuItem2.Size = new System.Drawing.Size(224, 26);
             this.exitToolStripMenuItem2.Text = "&Exit";
             this.exitToolStripMenuItem2.Click += new System.EventHandler(this.ExitToolStripMenuItem2_Click);
             // 
@@ -162,10 +162,10 @@
             this.lstUsers.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lstUsers.FormattingEnabled = true;
             this.lstUsers.ItemHeight = 16;
-            this.lstUsers.Location = new System.Drawing.Point(3, 242);
+            this.lstUsers.Location = new System.Drawing.Point(3, 225);
             this.lstUsers.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.lstUsers.Name = "lstUsers";
-            this.lstUsers.Size = new System.Drawing.Size(295, 116);
+            this.lstUsers.Size = new System.Drawing.Size(295, 99);
             this.lstUsers.TabIndex = 10;
             this.lstUsers.SelectedIndexChanged += new System.EventHandler(this.ListBox1_SelectedIndexChanged);
             this.lstUsers.DoubleClick += new System.EventHandler(this.ListBox1_DoubleClick);
@@ -176,9 +176,9 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.lstRooms, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.lstUsers, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.lvRooms, 0, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 28);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -186,10 +186,10 @@
             this.tableLayoutPanel1.RowCount = 6;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 80F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 70F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(301, 431);
             this.tableLayoutPanel1.TabIndex = 11;
             this.tableLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.TableLayoutPanel1_Paint);
@@ -197,7 +197,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 220);
+            this.label2.Location = new System.Drawing.Point(3, 203);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(82, 17);
             this.label2.TabIndex = 12;
@@ -325,21 +325,16 @@
             this.asdfToolStripMenuItem.Size = new System.Drawing.Size(49, 24);
             this.asdfToolStripMenuItem.Text = "asdf";
             // 
-            // lstRooms
+            // lvRooms
             // 
-            this.lstRooms.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lstRooms.FormattingEnabled = true;
-            this.lstRooms.ItemHeight = 16;
-            this.lstRooms.Location = new System.Drawing.Point(3, 102);
-            this.lstRooms.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.lstRooms.Name = "lstRooms";
-            this.lstRooms.Size = new System.Drawing.Size(295, 116);
-            this.lstRooms.TabIndex = 9;
-            this.lstRooms.MouseClick += new System.Windows.Forms.MouseEventHandler(this.LstRooms_MouseClick);
-            this.lstRooms.SelectedIndexChanged += new System.EventHandler(this.LstRooms_SelectedIndexChanged);
-            this.lstRooms.DoubleClick += new System.EventHandler(this.LstRooms_DoubleClick);
-            this.lstRooms.KeyUp += new System.Windows.Forms.KeyEventHandler(this.LstRooms_KeyUp);
-            this.lstRooms.MouseUp += new System.Windows.Forms.MouseEventHandler(this.LstRooms_MouseUp);
+            this.lvRooms.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lvRooms.Location = new System.Drawing.Point(3, 103);
+            this.lvRooms.Name = "lvRooms";
+            this.lvRooms.Size = new System.Drawing.Size(295, 97);
+            this.lvRooms.TabIndex = 14;
+            this.lvRooms.UseCompatibleStateImageBehavior = false;
+            this.lvRooms.SelectedIndexChanged += new System.EventHandler(this.LvRooms_SelectedIndexChanged);
+            this.lvRooms.DoubleClick += new System.EventHandler(this.LvRooms_DoubleClick);
             // 
             // Main
             // 
@@ -400,7 +395,7 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripStatusLabel tsStatuslabel;
-        private System.Windows.Forms.ListBox lstRooms;
+        private System.Windows.Forms.ListView lvRooms;
     }
 }
 
